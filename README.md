@@ -63,4 +63,3 @@ To build a clean, efficient, and real-time chat application using modern technol
 ## 👨‍💻 Author
 
 D-chat Project
-![ChatGPT Image Apr 27, 2026, 12_02_06 AM.png](../../Downloads/ChatGPT%20Image%20Apr%2027%2C%202026%2C%2012_02_06%20AM.png)
