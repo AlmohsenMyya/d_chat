@@ -28,16 +28,25 @@ The application uses:
 Responsible for UI and user interaction.
 
 Includes:
-
 * Screens (pages)
 * Widgets
 * UI components
+* **Animations** (Splash & Page transitions)
 
-Examples:
+---
 
-* LoginScreen
-* ChatScreen
-* HomeScreen
+### 3.4 Data Models Layer (Entities)
+
+Responsible for defining the data structure used throughout the app.
+
+Includes:
+* `UserModel`
+* `ChatModel`
+* `MessageModel`
+
+Responsibilities:
+* Serialization (`fromMap`, `toMap`)
+* Ensuring Type Safety
 
 ---
 
@@ -184,6 +193,8 @@ User Action → UI (Screen)
 * All logic must pass through Provider
 * Services handle external communication only
 * Keep widgets stateless when possible
+* **Use constructor-based Dependency Injection for Services into Providers**
+* **Always use Data Models instead of raw Maps from Firestore**
 
 ---
 

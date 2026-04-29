@@ -21,6 +21,12 @@ The system follows a Client–Server architecture and enables instant messaging 
 
 ## 3. Core Features
 
+### 3.0 Onboarding
+* 3-step introduction to the app
+* Welcome message and app value proposition
+* Security and privacy highlights
+* Real-time connectivity overview
+
 ### 3.1 Authentication
 
 * Email & password registration
@@ -58,28 +64,32 @@ The system follows a Client–Server architecture and enables instant messaging 
 ## 4. Non-Functional Requirements
 
 ### 4.1 Performance
-
 * Messages must be delivered with minimal delay (real-time)
 
-### 4.2 Usability
-
-* Simple UI
-* Smooth navigation
+### 4.2 Usability & Visual Identity
+* Primary Color: #1A73E8 (Royal Blue)
+* Modern UI with large rounded corners (BorderRadius: 20+)
+* Splash Screen with `assets/logo.png` and animation
+* Smooth transitions between screens
 
 ### 4.3 Security
-
 * Only authenticated users can access the system
 * Firestore security rules must restrict access
 
 ### 4.4 Multi-language
-
-* App supports Arabic and English
+* App supports Arabic and English (Full RTL support)
 * Language can be switched dynamically
 
 ### 4.5 Theme
-
 * Support Light Mode and Dark Mode
-* User can toggle manually
+* User can toggle manually in Settings
+
+---
+
+## 12. Error Handling & Validation
+* **Connectivity:** Show persistent bar or snackbar when offline.
+* **Firebase Errors:** Localized user-friendly messages for common errors (e.g., user-not-found, wrong-password).
+* **Input Validation:** Real-time feedback on registration/login forms.
 
 ---
 
