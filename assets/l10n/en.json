@@ -1,0 +1,13 @@
+{
+    "app_name": "D-chat",
+    "tagline": "Connect easily anytime",
+    "next": "Next",
+    "skip": "Skip",
+    "start": "Start",
+    "onboarding_title_1": "Welcome to D-chat",
+    "onboarding_desc_1": "An instant chat application that lets you communicate with your friends with ease and security.",
+    "onboarding_title_2": "Security & Privacy",
+    "onboarding_desc_2": "We keep your conversations private, and your data is encrypted with the highest security standards.",
+    "onboarding_title_3": "Always Stay Connected",
+    "onboarding_desc_3": "Receive instant messages and notifications from your friends at any time."
+}

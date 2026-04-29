@@ -1,30 +1,50 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:provider/provider.dart';
 import 'package:d_chat/main.dart';
+import 'package:d_chat/core/theme/theme_provider.dart';
+import 'package:d_chat/core/localization/language_provider.dart';
+import 'package:d_chat/features/auth/provider/auth_provider.dart';
+import 'package:d_chat/features/auth/data/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
+
+class FakeAuthService implements AuthService {
+  @override
+  Stream<User?> get authStateChanges => Stream.value(null);
+  @override
+  User? get currentUser => null;
+  @override
+  Future<UserCredential> signIn(String email, String password) => throw UnimplementedError();
+  @override
+  Future<UserCredential> signUp(String email, String password) => throw UnimplementedError();
+  @override
+  Future<void> signOut() => Future.value();
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App starts and shows splash screen', (WidgetTester tester) async {
+    final fakeAuthService = FakeAuthService();
+    final languageProvider = LanguageProvider();
+    languageProvider.setLocale(const Locale('ar')); // Set to Arabic for test
+    
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          Provider<AuthService>.value(value: fakeAuthService),
+          ChangeNotifierProvider(create: (_) => AuthProvider(fakeAuthService)),
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          ChangeNotifierProvider.value(value: languageProvider),
+        ],
+        child: const MyApp(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Should show splash screen text (fade in)
+    await tester.pump(const Duration(milliseconds: 800)); // Halfway through fade
+    expect(find.text('تواصل بسهولة في أي وقت'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Wait for the splash screen delay to complete
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
   });
 }
