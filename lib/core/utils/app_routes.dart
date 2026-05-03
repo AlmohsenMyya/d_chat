@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../shared/widgets/splash_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/register_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -19,9 +21,9 @@ class AppRoutes {
       case onboarding:
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case login:
-        return MaterialPageRoute(builder: (_) => const Scaffold(body: Center(child: Text("Login Screen (Sprint 2)" , style: TextStyle(fontSize: 25),))));
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
       case register:
-        return MaterialPageRoute(builder: (_) => const Scaffold(body: Center(child: Text("Register Screen (Sprint 2)"))));
+        return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case home:
         return MaterialPageRoute(builder: (_) => const Scaffold(body: Center(child: Text("Home Screen (Sprint 3)"))));
       default:

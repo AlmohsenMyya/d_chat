@@ -9,5 +9,20 @@
     "onboarding_title_2": "Security & Privacy",
     "onboarding_desc_2": "We keep your conversations private, and your data is encrypted with the highest security standards.",
     "onboarding_title_3": "Always Stay Connected",
-    "onboarding_desc_3": "Receive instant messages and notifications from your friends at any time."
+    "onboarding_desc_3": "Receive instant messages and notifications from your friends at any time.",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email Address",
+    "password": "Password",
+    "full_name": "Full Name",
+    "confirm_password": "Confirm Password",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "create_account": "Create Account",
+    "invalid_email": "Please enter a valid email",
+    "short_password": "Password must be at least 8 characters",
+    "passwords_dont_match": "Passwords do not match",
+    "field_required": "This field is required",
+    "login_failed": "Login failed. Please check your credentials.",
+    "register_failed": "Registration failed. Please try again."
 }
