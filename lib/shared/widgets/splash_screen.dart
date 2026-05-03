@@ -37,17 +37,21 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   void _navigateToNext() async {
-    await Future.delayed(const Duration(seconds: 3));
+    // Show splash animation for at least 2 seconds
+    await Future.delayed(const Duration(seconds: 2));
+    
     if (!mounted) return;
 
     final authProvider = context.read<AuthProvider>();
     
+    // Wait for AuthProvider to finish its initial check with Firebase
+    while (!authProvider.isInitialized) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+
     if (authProvider.isAuthenticated) {
       Navigator.pushReplacementNamed(context, AppRoutes.home);
     } else {
-      // For a production app, we would check if it's the first time 
-      // (using SharedPreferences) to show Onboarding or Login.
-      // For this sprint, we'll go to Onboarding as the default entry point for unauthenticated users.
       Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
     }
   }

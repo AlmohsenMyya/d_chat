@@ -8,6 +8,7 @@ import 'core/theme/theme_provider.dart';
 import 'core/theme/app_themes.dart';
 import 'core/localization/language_provider.dart';
 import 'core/localization/app_localizations.dart';
+import 'core/utils/navigation_service.dart';
 import 'core/utils/app_routes.dart';
 import 'firebase_options.dart';
 
@@ -22,13 +23,20 @@ void main() async {
     debugPrint("Firebase initialization failed: $e");
   }
 
+  final navigationService = NavigationService();
+
   runApp(
     MultiProvider(
       providers: [
+        Provider<NavigationService>.value(value: navigationService),
         Provider<AuthService>(create: (_) => AuthService()),
-        ChangeNotifierProxyProvider<AuthService, AuthProvider>(
-          create: (context) => AuthProvider(context.read<AuthService>()),
-          update: (context, authService, authProvider) => authProvider ?? AuthProvider(authService),
+        ChangeNotifierProxyProvider2<AuthService, NavigationService, AuthProvider>(
+          create: (context) => AuthProvider(
+            context.read<AuthService>(),
+            context.read<NavigationService>(),
+          ),
+          update: (context, authService, navService, authProvider) =>
+              authProvider ?? AuthProvider(authService, navService),
         ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
@@ -45,9 +53,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final languageProvider = context.watch<LanguageProvider>();
+    final navService = context.read<NavigationService>();
 
     return MaterialApp(
       title: 'D-chat',
+      navigatorKey: navService.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: AppThemes.lightTheme,
       darkTheme: AppThemes.darkTheme,

@@ -1,21 +1,32 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import '../data/auth_service.dart';
+import '../../../core/utils/navigation_service.dart';
+import '../../../core/utils/app_routes.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService;
+  final NavigationService _navigationService;
+  
   User? _user;
   bool _isLoading = false;
+  bool _isInitialized = false;
   String? _errorMessage;
+  File? _pickedImage;
 
   User? get user => _user;
   bool get isLoading => _isLoading;
+  bool get isInitialized => _isInitialized;
   bool get isAuthenticated => _user != null;
   String? get errorMessage => _errorMessage;
+  File? get pickedImage => _pickedImage;
 
-  AuthProvider(this._authService) {
+  AuthProvider(this._authService, this._navigationService) {
     _authService.authStateChanges.listen((User? user) {
       _user = user;
+      _isInitialized = true;
       notifyListeners();
     });
   }
@@ -31,38 +42,72 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> signIn(String email, String password) async {
+  Future<void> pickProfileImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    if (pickedFile != null) {
+      _pickedImage = File(pickedFile.path);
+      notifyListeners();
+    }
+  }
+
+  Future<void> signIn(String email, String password) async {
     _setLoading(true);
     try {
       await _authService.signIn(email, password);
-      return true;
+      _navigationService.replaceWith(AppRoutes.home);
+    } on FirebaseAuthException catch (e) {
+      _setError(_mapFirebaseError(e.code));
     } catch (e) {
       _setError(e.toString());
-      return false;
     } finally {
       _setLoading(false);
     }
   }
 
-  Future<bool> signUp(String email, String password, String name) async {
+  Future<void> signUp(String email, String password, String name) async {
     _setLoading(true);
     try {
-      await _authService.signUp(email, password, name);
-      return true;
+      await _authService.signUp(email, password, name, imageFile: _pickedImage);
+      _navigationService.replaceWith(AppRoutes.home);
+    } on FirebaseAuthException catch (e) {
+      _setError(_mapFirebaseError(e.code));
     } catch (e) {
       _setError(e.toString());
-      return false;
     } finally {
       _setLoading(false);
+    }
+  }
+
+  String _mapFirebaseError(String code) {
+    switch (code) {
+      case 'user-not-found':
+        return 'no_user_found';
+      case 'wrong-password':
+        return 'wrong_password';
+      case 'email-already-in-use':
+        return 'email_in_use';
+      case 'invalid-email':
+        return 'invalid_email';
+      case 'network-request-failed':
+        return 'network_error';
+      default:
+        return 'auth_failed';
     }
   }
 
   Future<void> signOut() async {
     try {
       await _authService.signOut();
+      _navigationService.replaceWith(AppRoutes.login);
     } catch (e) {
       _setError(e.toString());
     }
+  }
+
+  void clearImageData() {
+    _pickedImage = null;
+    notifyListeners();
   }
 
   void clearError() {

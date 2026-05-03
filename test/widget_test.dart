@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:d_chat/main.dart';
 import 'package:d_chat/core/theme/theme_provider.dart';
 import 'package:d_chat/core/localization/language_provider.dart';
+import 'package:d_chat/core/utils/navigation_service.dart';
 import 'package:d_chat/features/auth/provider/auth_provider.dart';
 import 'package:d_chat/features/auth/data/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
@@ -16,22 +18,26 @@ class FakeAuthService implements AuthService {
   @override
   Future<UserCredential> signIn(String email, String password) => throw UnimplementedError();
   @override
-  Future<UserCredential> signUp(String email, String password, String name) => throw UnimplementedError();
+  Future<UserCredential> signUp(String email, String password, String name, {File? imageFile}) => throw UnimplementedError();
   @override
   Future<void> signOut() => Future.value();
+  @override
+  Future<String?> uploadProfileImage(String uid, File imageFile) => Future.value(null);
 }
 
 void main() {
   testWidgets('App starts and shows splash screen', (WidgetTester tester) async {
     final fakeAuthService = FakeAuthService();
+    final navService = NavigationService();
     final languageProvider = LanguageProvider();
     languageProvider.setLocale(const Locale('ar')); // Set to Arabic for test
     
     await tester.pumpWidget(
       MultiProvider(
         providers: [
+          Provider<NavigationService>.value(value: navService),
           Provider<AuthService>.value(value: fakeAuthService),
-          ChangeNotifierProvider(create: (_) => AuthProvider(fakeAuthService)),
+          ChangeNotifierProvider(create: (_) => AuthProvider(fakeAuthService, navService)),
           ChangeNotifierProvider(create: (_) => ThemeProvider()),
           ChangeNotifierProvider.value(value: languageProvider),
         ],
