@@ -16,7 +16,7 @@ class FakeAuthService implements AuthService {
   @override
   Future<UserCredential> signIn(String email, String password) => throw UnimplementedError();
   @override
-  Future<UserCredential> signUp(String email, String password) => throw UnimplementedError();
+  Future<UserCredential> signUp(String email, String password, String name) => throw UnimplementedError();
   @override
   Future<void> signOut() => Future.value();
 }

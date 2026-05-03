@@ -42,9 +42,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     final authProvider = context.read<AuthProvider>();
     
-    // In Sprint 1, we navigate to Onboarding if it's the first time, 
-    // or Login if not authenticated. For now, let's go to Onboarding.
-    Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+    if (authProvider.isAuthenticated) {
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } else {
+      // For a production app, we would check if it's the first time 
+      // (using SharedPreferences) to show Onboarding or Login.
+      // For this sprint, we'll go to Onboarding as the default entry point for unauthenticated users.
+      Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+    }
   }
 
   @override
