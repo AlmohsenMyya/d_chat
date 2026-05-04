@@ -174,6 +174,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ],
                       ),
+                      SizedBox(height: 15,),
+                      Image.asset('assets/logo.png', height: 100),
                     ],
                   ),
                 ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String hintText;
   final IconData icon;
   final bool isPassword;
@@ -9,10 +9,11 @@ class CustomTextField extends StatelessWidget {
   final VoidCallback? onToggleVisibility;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
+  final Function(String)? onChanged;
 
   const CustomTextField({
     super.key,
-    required this.controller,
+    this.controller,
     required this.hintText,
     required this.icon,
     this.isPassword = false,
@@ -20,6 +21,7 @@ class CustomTextField extends StatelessWidget {
     this.onToggleVisibility,
     this.validator,
     this.keyboardType,
+    this.onChanged,
   });
 
   @override
@@ -29,6 +31,7 @@ class CustomTextField extends StatelessWidget {
       obscureText: isPassword ? obscureText : false,
       validator: validator,
       keyboardType: keyboardType,
+      onChanged: onChanged,
       decoration: InputDecoration(
         hintText: hintText,
         prefixIcon: Icon(icon, color: Theme.of(context).primaryColor),

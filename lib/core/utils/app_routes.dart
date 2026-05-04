@@ -3,6 +3,10 @@ import '../../shared/widgets/splash_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/user/presentation/screens/users_screen.dart';
+import '../../features/chat/presentation/screens/chat_screen.dart';
+import '../../features/user/data/user_model.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -10,6 +14,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String home = '/home';
+  static const String users = '/users';
   static const String chat = '/chat';
   static const String settings = '/settings';
   static const String profile = '/profile';
@@ -25,7 +30,12 @@ class AppRoutes {
       case register:
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case home:
-        return MaterialPageRoute(builder: (_) => const Scaffold(body: Center(child: Text("Home Screen (Sprint 3)"))));
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case users:
+        return MaterialPageRoute(builder: (_) => const UsersScreen());
+      case chat:
+        final user = settings.arguments as UserModel;
+        return MaterialPageRoute(builder: (_) => ChatScreen(user: user));
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

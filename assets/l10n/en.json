@@ -32,5 +32,13 @@
     "auth_failed": "Authentication failed",
     "upload_image": "Upload Profile Image",
     "image_required": "Please select an image",
-    "image_uploaded": "Image uploaded successfully"
+    "image_uploaded": "Image uploaded successfully",
+    "chats": "Chats",
+    "users": "Users",
+    "search_users": "Search users...",
+    "no_users_found": "No users found",
+    "no_chats_yet": "No conversations yet",
+    "logout": "Logout",
+    "online": "Online",
+    "offline": "Offline"
 }

@@ -55,7 +55,7 @@ class AuthProvider with ChangeNotifier {
     _setLoading(true);
     try {
       await _authService.signIn(email, password);
-      _navigationService.replaceWith(AppRoutes.home);
+      _navigationService.pushAndRemoveUntil(AppRoutes.home);
     } on FirebaseAuthException catch (e) {
       _setError(_mapFirebaseError(e.code));
     } catch (e) {
@@ -69,7 +69,7 @@ class AuthProvider with ChangeNotifier {
     _setLoading(true);
     try {
       await _authService.signUp(email, password, name, imageFile: _pickedImage);
-      _navigationService.replaceWith(AppRoutes.home);
+      _navigationService.pushAndRemoveUntil(AppRoutes.home);
     } on FirebaseAuthException catch (e) {
       _setError(_mapFirebaseError(e.code));
     } catch (e) {

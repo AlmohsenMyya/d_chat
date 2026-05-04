@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../features/auth/provider/auth_provider.dart';
 import '../../../core/localization/app_localizations.dart';
-import '../../core/utils/app_routes.dart';
+import '../../../core/utils/app_routes.dart';
+import '../../../core/utils/navigation_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -43,6 +44,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     if (!mounted) return;
 
     final authProvider = context.read<AuthProvider>();
+    final navService = context.read<NavigationService>();
     
     // Wait for AuthProvider to finish its initial check with Firebase
     while (!authProvider.isInitialized) {
@@ -50,9 +52,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     }
 
     if (authProvider.isAuthenticated) {
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
+      navService.pushAndRemoveUntil(AppRoutes.home);
     } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+      navService.pushAndRemoveUntil(AppRoutes.onboarding);
     }
   }
 

@@ -4,12 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'features/auth/provider/auth_provider.dart';
 import 'features/auth/data/auth_service.dart';
+import 'features/user/data/user_service.dart';
+import 'features/user/provider/user_provider.dart';
 import 'core/theme/theme_provider.dart';
 import 'core/theme/app_themes.dart';
 import 'core/localization/language_provider.dart';
 import 'core/localization/app_localizations.dart';
-import 'core/utils/navigation_service.dart';
 import 'core/utils/app_routes.dart';
+import 'core/utils/navigation_service.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -30,6 +32,7 @@ void main() async {
       providers: [
         Provider<NavigationService>.value(value: navigationService),
         Provider<AuthService>(create: (_) => AuthService()),
+        Provider<UserService>(create: (_) => UserService()),
         ChangeNotifierProxyProvider2<AuthService, NavigationService, AuthProvider>(
           create: (context) => AuthProvider(
             context.read<AuthService>(),
@@ -37,6 +40,13 @@ void main() async {
           ),
           update: (context, authService, navService, authProvider) =>
               authProvider ?? AuthProvider(authService, navService),
+        ),
+        ChangeNotifierProxyProvider3<UserService, NavigationService, AuthProvider, UserProvider?>(
+          create: (context) => null, // Will be initialized by update
+          update: (context, userService, navService, authProvider, previous) {
+            if (authProvider.user == null) return null;
+            return previous ?? UserProvider(userService, navService, authProvider.user!.uid);
+          },
         ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
