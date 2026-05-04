@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../features/chat/data/message_model.dart';
+
+class ChatBubble extends StatelessWidget {
+  final MessageModel message;
+  final bool isMe;
+
+  const ChatBubble({
+    super.key,
+    required this.message,
+    required this.isMe,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final borderRadius = BorderRadius.only(
+      topLeft: const Radius.circular(16),
+      topRight: const Radius.circular(16),
+      bottomLeft: isMe ? const Radius.circular(16) : Radius.zero,
+      bottomRight: isMe ? Radius.zero : const Radius.circular(16),
+    );
+
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
+        ),
+        decoration: BoxDecoration(
+          color: isMe ? theme.primaryColor : Colors.grey[200],
+          borderRadius: borderRadius,
+          boxShadow: [
+            if (isMe)
+              BoxShadow(
+                color: theme.primaryColor.withOpacity(0.3),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            Text(
+              message.text,
+              style: TextStyle(
+                color: isMe ? Colors.white : Colors.black87,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              DateFormat('hh:mm a').format(message.createdAt),
+              style: TextStyle(
+                color: isMe ? Colors.white70 : Colors.black54,
+                fontSize: 10,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../shared/widgets/splash_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
@@ -7,6 +8,10 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/user/presentation/screens/users_screen.dart';
 import '../../features/chat/presentation/screens/chat_screen.dart';
 import '../../features/user/data/user_model.dart';
+import '../../features/chat/provider/chat_provider.dart';
+import '../../features/chat/data/chat_service.dart';
+import '../../features/auth/provider/auth_provider.dart';
+import 'navigation_service.dart';
 
 class AppRoutes {
   static const String splash = '/';
