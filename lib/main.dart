@@ -7,6 +7,7 @@ import 'features/auth/data/auth_service.dart';
 import 'features/chat/data/chat_service.dart';
 import 'features/chat/provider/chat_provider.dart';
 import 'features/home/provider/home_provider.dart';
+import 'core/services/presence_service.dart';
 import 'features/user/data/user_service.dart';
 import 'features/user/provider/user_provider.dart';
 import 'features/user/data/user_model.dart';
@@ -38,13 +39,15 @@ void main() async {
         Provider<AuthService>(create: (_) => AuthService()),
         Provider<UserService>(create: (_) => UserService()),
         Provider<ChatService>(create: (_) => ChatService()),
-        ChangeNotifierProxyProvider2<AuthService, NavigationService, AuthProvider>(
+        Provider<PresenceService>(create: (_) => PresenceService()),
+        ChangeNotifierProxyProvider3<AuthService, NavigationService, PresenceService, AuthProvider>(
           create: (context) => AuthProvider(
             context.read<AuthService>(),
             context.read<NavigationService>(),
+            context.read<PresenceService>(),
           ),
-          update: (context, authService, navService, authProvider) =>
-              authProvider ?? AuthProvider(authService, navService),
+          update: (context, authService, navService, presenceService, authProvider) =>
+              authProvider ?? AuthProvider(authService, navService, presenceService),
         ),
         ChangeNotifierProxyProvider3<UserService, NavigationService, AuthProvider, UserProvider?>(
           create: (context) => null,

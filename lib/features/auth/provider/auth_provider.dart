@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import '../data/auth_service.dart';
+import '../../../core/services/presence_service.dart';
 import '../../../core/utils/navigation_service.dart';
 import '../../../core/utils/app_routes.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService;
   final NavigationService _navigationService;
+  final PresenceService? _presenceService;
   
   User? _user;
   bool _isLoading = false;
@@ -23,10 +25,13 @@ class AuthProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   File? get pickedImage => _pickedImage;
 
-  AuthProvider(this._authService, this._navigationService) {
+  AuthProvider(this._authService, this._navigationService, [this._presenceService]) {
     _authService.authStateChanges.listen((User? user) {
       _user = user;
       _isInitialized = true;
+      if (user != null) {
+        _presenceService?.configurePresence(user.uid);
+      }
       notifyListeners();
     });
   }
@@ -98,6 +103,9 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> signOut() async {
     try {
+      if (_user != null && _presenceService != null) {
+        await _presenceService!.setOffline(_user!.uid);
+      }
       await _authService.signOut();
       _navigationService.replaceWith(AppRoutes.login);
     } catch (e) {
