@@ -4,6 +4,8 @@ import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/navigation_service.dart';
 import '../../../auth/provider/auth_provider.dart';
+import '../../provider/home_provider.dart';
+import '../widgets/chat_tile.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final loc = AppLocalizations.of(context);
     final authProvider = context.read<AuthProvider>();
     final navService = context.read<NavigationService>();
+    final homeProvider = context.watch<HomeProvider?>();
 
     return Scaffold(
       appBar: AppBar(
@@ -34,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          Center(child: Text(loc?.translate('no_chats_yet') ?? "No conversations yet")),
+          _buildChatList(loc, homeProvider, authProvider.user?.uid),
           const Center(child: Text("Settings (Sprint 6)")),
         ],
       ),
@@ -60,6 +63,28 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildChatList(AppLocalizations? loc, HomeProvider? provider, String? currentUserId) {
+    if (provider == null || provider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (provider.chats.isEmpty) {
+      return Center(child: Text(loc?.translate('no_chats_yet') ?? "No conversations yet"));
+    }
+
+    return ListView.builder(
+      itemCount: provider.chats.length,
+      itemBuilder: (context, index) {
+        final chatData = provider.chats[index];
+        return ChatTile(
+          chatData: chatData,
+          currentUserId: currentUserId ?? "",
+          onTap: (user) => provider.openChat(user),
+        );
+      },
     );
   }
 }

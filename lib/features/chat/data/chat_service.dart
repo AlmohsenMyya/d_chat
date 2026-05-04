@@ -49,6 +49,16 @@ class ChatService {
     await batch.commit();
   }
 
+  // Stream of all chats where the current user is a participant
+  Stream<List<Map<String, dynamic>>> getChatsStream(String currentUserId) {
+    return _firestore
+        .collection('chats')
+        .where('participants', arrayContains: currentUserId)
+        .orderBy('lastMessageTime', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
   // Mark message as read
   Future<void> markAsRead(String chatId, String messageId) async {
     await _firestore

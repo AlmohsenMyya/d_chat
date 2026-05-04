@@ -13,7 +13,15 @@ class UserService {
         .map((snapshot) => snapshot.docs
             .map((doc) => UserModel.fromMap(doc.data()))
             .toList());
+    // Get a single user by ID
+  Future<UserModel?> getUserById(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    if (doc.exists && doc.data() != null) {
+      return UserModel.fromMap(doc.data()!);
+    }
+    return null;
   }
+}
 
   // Optional: Server-side search (limited by Firestore capabilities)
   // For better search, we'll implement client-side filtering in the Provider
@@ -28,5 +36,21 @@ class UserService {
         .map((doc) => UserModel.fromMap(doc.data()))
         .where((user) => user.uid != currentUserId)
         .toList();
+    // Get a single user by ID
+  Future<UserModel?> getUserById(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    if (doc.exists && doc.data() != null) {
+      return UserModel.fromMap(doc.data()!);
+    }
+    return null;
+  }
+}
+  // Get a single user by ID
+  Future<UserModel?> getUserById(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    if (doc.exists && doc.data() != null) {
+      return UserModel.fromMap(doc.data()!);
+    }
+    return null;
   }
 }

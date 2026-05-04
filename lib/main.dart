@@ -6,6 +6,7 @@ import 'features/auth/provider/auth_provider.dart';
 import 'features/auth/data/auth_service.dart';
 import 'features/chat/data/chat_service.dart';
 import 'features/chat/provider/chat_provider.dart';
+import 'features/home/provider/home_provider.dart';
 import 'features/user/data/user_service.dart';
 import 'features/user/provider/user_provider.dart';
 import 'features/user/data/user_model.dart';
@@ -50,6 +51,18 @@ void main() async {
           update: (context, userService, navService, authProvider, previous) {
             if (authProvider.user == null) return null;
             return previous ?? UserProvider(userService, navService, authProvider.user!.uid);
+          },
+        ),
+        ChangeNotifierProxyProvider3<ChatService, UserService, AuthProvider, HomeProvider?>(
+          create: (context) => null,
+          update: (context, chatService, userService, authProvider, previous) {
+            if (authProvider.user == null) return null;
+            return previous ?? HomeProvider(
+              chatService,
+              userService,
+              context.read<NavigationService>(),
+              authProvider.user!.uid,
+            );
           },
         ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
