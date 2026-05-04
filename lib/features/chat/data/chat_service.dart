@@ -1,11 +1,16 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'message_model.dart';
 
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  // Cloudinary Configuration
+  final String _cloudinaryUrl = "https://api.cloudinary.com/v1_1/dyvsf3nd8/image/upload";
+  final String _uploadPreset = "unsigned_preset";
 
   // Generates a consistent chatId for two users by sorting their UIDs
   String getChatId(String uid1, String uid2) {
@@ -91,15 +96,32 @@ class ChatService {
         .update({'isRead': true});
   }
 
-  // Upload image to Firebase Storage for chat
-  Future<String?> uploadChatImage(String chatId, File imageFile) async {
+  // Upload image to Cloudinary using REST API (Unsigned)
+  Future<String> uploadChatImage(File imageFile) async {
     try {
-      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      final ref = _storage.ref().child('chat_images').child(chatId).child('$fileName.jpg');
-      await ref.putFile(imageFile);
-      return await ref.getDownloadURL();
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(_cloudinaryUrl),
+      );
+
+      request.fields['upload_preset'] = _uploadPreset;
+      request.files.add(
+        await http.MultipartFile.fromPath('file', imageFile.path),
+      );
+
+      var response = await request.send();
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        var responseData = await response.stream.toBytes();
+        var jsonResponse = jsonDecode(utf8.decode(responseData));
+
+        return jsonResponse['secure_url'] as String;
+      } else {
+        throw Exception("Cloudinary upload failed: ${response.statusCode}");
+      }
     } catch (e) {
-      return null;
+      debugPrint("Cloudinary Upload Error: $e");
+      rethrow;
     }
   }
 }

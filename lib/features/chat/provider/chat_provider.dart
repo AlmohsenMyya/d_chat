@@ -77,7 +77,7 @@ class ChatProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final imageUrl = await _chatService.uploadChatImage(_chatId, File(pickedFile.path));
+      final imageUrl = await _chatService.uploadChatImage( File(pickedFile.path));
       if (imageUrl != null) {
         final message = MessageModel(
           senderId: _currentUserId,
