@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../data/chat_service.dart';
 import '../data/message_model.dart';
 import '../../../core/utils/navigation_service.dart';
@@ -13,10 +15,12 @@ class ChatProvider with ChangeNotifier {
   StreamSubscription? _messageSubscription;
   List<MessageModel> _messages = [];
   bool _isLoading = true;
+  bool _isUploading = false;
   final String _chatId;
 
   List<MessageModel> get messages => _messages;
   bool get isLoading => _isLoading;
+  bool get isUploading => _isUploading;
   String get chatId => _chatId;
   String get currentUserId => _currentUserId;
 
@@ -60,7 +64,35 @@ class ChatProvider with ChangeNotifier {
       await _chatService.sendMessage(_chatId, message, [_currentUserId, _targetUserId]);
     } catch (e) {
       debugPrint("Error sending message: $e");
-      // Localization key for generic error can be added later if needed
+    }
+  }
+
+  Future<void> sendImageMessage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    
+    if (pickedFile == null) return;
+
+    _isUploading = true;
+    notifyListeners();
+
+    try {
+      final imageUrl = await _chatService.uploadChatImage(_chatId, File(pickedFile.path));
+      if (imageUrl != null) {
+        final message = MessageModel(
+          senderId: _currentUserId,
+          text: "[Image]",
+          imageUrl: imageUrl,
+          type: 'image',
+          createdAt: DateTime.now(),
+        );
+        await _chatService.sendMessage(_chatId, message, [_currentUserId, _targetUserId]);
+      }
+    } catch (e) {
+      debugPrint("Error uploading/sending image: $e");
+    } finally {
+      _isUploading = false;
+      notifyListeners();
     }
   }
 

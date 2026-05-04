@@ -4,7 +4,8 @@ class MessageModel {
   final String? id;
   final String senderId;
   final String text;
-  final String type;
+  final String? imageUrl;
+  final String type; // 'text' or 'image'
   final DateTime createdAt;
   final bool isRead;
 
@@ -12,6 +13,7 @@ class MessageModel {
     this.id,
     required this.senderId,
     required this.text,
+    this.imageUrl,
     this.type = 'text',
     required this.createdAt,
     this.isRead = false,
@@ -22,6 +24,7 @@ class MessageModel {
       id: id,
       senderId: map['senderId'] ?? '',
       text: map['text'] ?? '',
+      imageUrl: map['imageUrl'],
       type: map['type'] ?? 'text',
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isRead: map['isRead'] ?? false,
@@ -32,6 +35,7 @@ class MessageModel {
     return {
       'senderId': senderId,
       'text': text,
+      'imageUrl': imageUrl,
       'type': type,
       'createdAt': FieldValue.serverTimestamp(),
       'isRead': isRead,

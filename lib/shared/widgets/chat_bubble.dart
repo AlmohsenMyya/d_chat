@@ -45,13 +45,33 @@ class ChatBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            Text(
-              message.text,
-              style: TextStyle(
-                color: isMe ? Colors.white : Colors.black87,
-                fontSize: 16,
+            if (message.type == 'image' && message.imageUrl != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    message.imageUrl!,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const SizedBox(
+                        height: 150,
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                  ),
+                ),
               ),
-            ),
+            if (message.text.isNotEmpty && message.text != "[Image]")
+              Text(
+                message.text,
+                style: TextStyle(
+                  color: isMe ? Colors.white : Colors.black87,
+                  fontSize: 16,
+                ),
+              ),
             const SizedBox(height: 4),
             Row(
               mainAxisSize: MainAxisSize.min,

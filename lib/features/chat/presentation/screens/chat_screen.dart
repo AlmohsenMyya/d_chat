@@ -63,17 +63,35 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: chatProvider.isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    reverse: true,
-                    padding: const EdgeInsets.all(10),
-                    itemCount: chatProvider.messages.length,
-                    itemBuilder: (context, index) {
-                      final message = chatProvider.messages[index];
-                      return ChatBubble(
-                        message: message,
-                        isMe: message.senderId == chatProvider.currentUserId,
-                      );
-                    },
+                : Stack(
+                    children: [
+                      ListView.builder(
+                        reverse: true,
+                        padding: const EdgeInsets.all(10),
+                        itemCount: chatProvider.messages.length,
+                        itemBuilder: (context, index) {
+                          final message = chatProvider.messages[index];
+                          return ChatBubble(
+                            message: message,
+                            isMe: message.senderId == chatProvider.currentUserId,
+                          );
+                        },
+                      ),
+                      if (chatProvider.isUploading)
+                        const Positioned(
+                          top: 10,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: Card(
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
           ),
           _buildInputArea(loc, chatProvider),
@@ -98,6 +116,10 @@ class _ChatScreenState extends State<ChatScreen> {
       child: SafeArea(
         child: Row(
           children: [
+            IconButton(
+              icon: Icon(Icons.image_outlined, color: Theme.of(context).primaryColor),
+              onPressed: () => provider.sendImageMessage(),
+            ),
             Expanded(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),

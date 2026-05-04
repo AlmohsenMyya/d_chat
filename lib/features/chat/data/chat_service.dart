@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'message_model.dart';
 
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   // Generates a consistent chatId for two users by sorting their UIDs
   String getChatId(String uid1, String uid2) {
@@ -86,5 +89,17 @@ class ChatService {
         .collection('messages')
         .doc(messageId)
         .update({'isRead': true});
+  }
+
+  // Upload image to Firebase Storage for chat
+  Future<String?> uploadChatImage(String chatId, File imageFile) async {
+    try {
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final ref = _storage.ref().child('chat_images').child(chatId).child('$fileName.jpg');
+      await ref.putFile(imageFile);
+      return await ref.getDownloadURL();
+    } catch (e) {
+      return null;
+    }
   }
 }
