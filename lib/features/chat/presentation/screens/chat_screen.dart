@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/widgets/chat_bubble.dart';
+import '../../../../shared/widgets/shimmer_skeletons.dart';
 import '../../provider/chat_provider.dart';
 import '../../../user/data/user_model.dart';
 
@@ -62,7 +63,11 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: chatProvider.isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? ListView.builder(
+                    reverse: true,
+                    itemCount: 5,
+                    itemBuilder: (context, index) => ShimmerChatBubble(isMe: index % 2 == 0),
+                  )
                 : Stack(
                     children: [
                       ListView.builder(

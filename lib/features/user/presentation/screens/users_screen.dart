@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
+import '../../../../shared/widgets/shimmer_skeletons.dart';
 import '../../provider/user_provider.dart';
 import '../../data/user_model.dart';
 
@@ -29,7 +30,10 @@ class UsersScreen extends StatelessWidget {
           ),
           Expanded(
             child: userProvider == null || userProvider.isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? ListView.builder(
+                    itemCount: 8,
+                    itemBuilder: (context, index) => const ShimmerUserTile(),
+                  )
                 : userProvider.users.isEmpty
                     ? Center(child: Text(loc?.translate('no_users_found') ?? "No users found"))
                     : ListView.builder(

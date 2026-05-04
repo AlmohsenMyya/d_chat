@@ -6,6 +6,7 @@ import '../../../../core/utils/navigation_service.dart';
 import '../../../auth/provider/auth_provider.dart';
 import '../../provider/home_provider.dart';
 import '../widgets/chat_tile.dart';
+import '../../../../shared/widgets/shimmer_skeletons.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,7 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildChatList(AppLocalizations? loc, HomeProvider? provider, String? currentUserId) {
     if (provider == null || provider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return ListView.builder(
+        itemCount: 6,
+        itemBuilder: (context, index) => const ShimmerChatTile(),
+      );
     }
 
     if (provider.chats.isEmpty) {
