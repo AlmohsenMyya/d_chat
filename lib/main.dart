@@ -4,8 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'features/auth/provider/auth_provider.dart';
 import 'features/auth/data/auth_service.dart';
+import 'features/chat/data/chat_service.dart';
+import 'features/chat/provider/chat_provider.dart';
 import 'features/user/data/user_service.dart';
 import 'features/user/provider/user_provider.dart';
+import 'features/user/data/user_model.dart';
 import 'core/theme/theme_provider.dart';
 import 'core/theme/app_themes.dart';
 import 'core/localization/language_provider.dart';
@@ -33,6 +36,7 @@ void main() async {
         Provider<NavigationService>.value(value: navigationService),
         Provider<AuthService>(create: (_) => AuthService()),
         Provider<UserService>(create: (_) => UserService()),
+        Provider<ChatService>(create: (_) => ChatService()),
         ChangeNotifierProxyProvider2<AuthService, NavigationService, AuthProvider>(
           create: (context) => AuthProvider(
             context.read<AuthService>(),
@@ -42,7 +46,7 @@ void main() async {
               authProvider ?? AuthProvider(authService, navService),
         ),
         ChangeNotifierProxyProvider3<UserService, NavigationService, AuthProvider, UserProvider?>(
-          create: (context) => null, // Will be initialized by update
+          create: (context) => null,
           update: (context, userService, navService, authProvider, previous) {
             if (authProvider.user == null) return null;
             return previous ?? UserProvider(userService, navService, authProvider.user!.uid);

@@ -34,8 +34,21 @@ class AppRoutes {
       case users:
         return MaterialPageRoute(builder: (_) => const UsersScreen());
       case chat:
-        final user = settings.arguments as UserModel;
-        return MaterialPageRoute(builder: (_) => ChatScreen(user: user));
+        final targetUser = settings.arguments as UserModel;
+        return MaterialPageRoute(
+          builder: (context) {
+            final authProvider = context.read<AuthProvider>();
+            return ChangeNotifierProvider(
+              create: (context) => ChatProvider(
+                context.read<ChatService>(),
+                context.read<NavigationService>(),
+                authProvider.user!.uid,
+                targetUser.uid,
+              ),
+              child: ChatScreen(user: targetUser),
+            );
+          },
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
