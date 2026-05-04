@@ -59,7 +59,26 @@ class ChatService {
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
-  // Mark message as read
+  // Mark all messages from the other user as read
+  Future<void> markMessagesAsRead(String chatId, String currentUserId) async {
+    final snapshot = await _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .where('senderId', isNotEqualTo: currentUserId)
+        .where('isRead', isEqualTo: false)
+        .get();
+
+    if (snapshot.docs.isEmpty) return;
+
+    final batch = _firestore.batch();
+    for (var doc in snapshot.docs) {
+      batch.update(doc.reference, {'isRead': true});
+    }
+    await batch.commit();
+  }
+
+  // Mark a single message as read
   Future<void> markAsRead(String chatId, String messageId) async {
     await _firestore
         .collection('chats')

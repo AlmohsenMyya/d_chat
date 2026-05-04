@@ -34,8 +34,17 @@ class ChatProvider with ChangeNotifier {
     _messageSubscription = _chatService.getMessagesStream(_chatId).listen((messages) {
       _messages = messages;
       _isLoading = false;
+      _markAsRead(); // Mark incoming messages as read if we are in the chat
       notifyListeners();
     });
+  }
+
+  Future<void> _markAsRead() async {
+    try {
+      await _chatService.markMessagesAsRead(_chatId, _currentUserId);
+    } catch (e) {
+      debugPrint("Error marking messages as read: $e");
+    }
   }
 
   Future<void> sendMessage(String text) async {
