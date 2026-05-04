@@ -40,5 +40,9 @@
     "no_chats_yet": "لا توجد محادثات بعد",
     "logout": "تسجيل الخروج",
     "online": "نشط",
-    "offline": "غير نشط"
+    "offline": "غير نشط",
+    "type_message": "اكتب رسالة...",
+    "send": "إرسال",
+    "today": "اليوم",
+    "yesterday": "أمس"
 }

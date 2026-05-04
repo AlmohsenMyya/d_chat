@@ -1,30 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MessageModel {
-  final String messageId;
+  final String? id;
   final String senderId;
   final String text;
   final String type;
   final DateTime createdAt;
-  final bool read;
+  final bool isRead;
 
   MessageModel({
-    required this.messageId,
+    this.id,
     required this.senderId,
     required this.text,
-    required this.type,
+    this.type = 'text',
     required this.createdAt,
-    required this.read,
+    this.isRead = false,
   });
 
-  factory MessageModel.fromMap(Map<String, dynamic> map, String id) {
+  factory MessageModel.fromMap(String id, Map<String, dynamic> map) {
     return MessageModel(
-      messageId: id,
+      id: id,
       senderId: map['senderId'] ?? '',
       text: map['text'] ?? '',
       type: map['type'] ?? 'text',
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      read: map['read'] ?? false,
+      isRead: map['isRead'] ?? false,
     );
   }
 
@@ -33,8 +33,8 @@ class MessageModel {
       'senderId': senderId,
       'text': text,
       'type': type,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'read': read,
+      'createdAt': FieldValue.serverTimestamp(),
+      'isRead': isRead,
     };
   }
 }

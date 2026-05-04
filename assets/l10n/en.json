@@ -40,5 +40,9 @@
     "no_chats_yet": "No conversations yet",
     "logout": "Logout",
     "online": "Online",
-    "offline": "Offline"
+    "offline": "Offline",
+    "type_message": "Type a message...",
+    "send": "Send",
+    "today": "Today",
+    "yesterday": "Yesterday"
 }
