@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/utils/app_routes.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../provider/auth_provider.dart';
 
@@ -36,13 +37,18 @@ class _LoginScreenState extends State<LoginScreen> {
             Consumer<AuthProvider>(
               builder: (context, auth, child) {
                 return auth.isLoading
-                    ? LinearProgressIndicator(color: Theme.of(context).primaryColor)
+                    ? LinearProgressIndicator(
+                        color: Theme.of(context).primaryColor,
+                      )
                     : const SizedBox(height: 4);
               },
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 40.0,
+                ),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -52,7 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 20),
                       Text(
                         loc?.translate('app_name') ?? "D-chat",
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).primaryColor,
                             ),
@@ -77,7 +84,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: Icons.lock_outline,
                         isPassword: true,
                         obscureText: _obscureText,
-                        onToggleVisibility: () => setState(() => _obscureText = !_obscureText),
+                        onToggleVisibility: () =>
+                            setState(() => _obscureText = !_obscureText),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return loc?.translate('field_required');
@@ -91,19 +99,31 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (auth.errorMessage != null) {
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(loc?.translate(auth.errorMessage!) ?? auth.errorMessage!)),
+                                SnackBar(
+                                  content: Text(
+                                    loc?.translate(auth.errorMessage!) ??
+                                        auth.errorMessage!,
+                                  ),
+                                ),
                               );
                               auth.clearError();
                             });
                           }
                           return ElevatedButton(
-                            onPressed: auth.isLoading ? null : () {
-                              if (_formKey.currentState!.validate()) {
-                                auth.signIn(_emailController.text.trim(), _passwordController.text.trim());
-                              }
-                            },
+                            onPressed: auth.isLoading
+                                ? null
+                                : () {
+                                    if (_formKey.currentState!.validate()) {
+                                      auth.signIn(
+                                        _emailController.text.trim(),
+                                        _passwordController.text.trim(),
+                                      );
+                                    }
+                                  },
                             child: auth.isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
                                 : Text(loc?.translate('login') ?? "Login"),
                           );
                         },
@@ -112,10 +132,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(loc?.translate('no_account') ?? "Don't have an account?"),
+                          Text(
+                            loc?.translate('no_account') ??
+                                "Don't have an account?",
+                          ),
                           TextButton(
-                            onPressed: () => authProvider.signOut(), // Use signOut to clear and go to login/onboarding if needed
-                            child: Text(loc?.translate('create_account') ?? "Create Account"),
+                            onPressed: () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.register,
+                            ),
+                            // Use signOut to clear and go to login/onboarding if needed
+                            child: Text(
+                              loc?.translate('create_account') ??
+                                  "Create Account",
+                            ),
                           ),
                         ],
                       ),
