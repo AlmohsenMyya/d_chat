@@ -5,6 +5,7 @@ class UserModel {
   final String name;
   final String email;
   final String? photoUrl;
+  final String? fcmToken;
   final bool isOnline;
   final DateTime lastSeen;
   final DateTime createdAt;
@@ -14,6 +15,7 @@ class UserModel {
     required this.name,
     required this.email,
     this.photoUrl,
+    this.fcmToken,
     required this.isOnline,
     required this.lastSeen,
     required this.createdAt,
@@ -25,6 +27,7 @@ class UserModel {
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       photoUrl: map['photoUrl'],
+      fcmToken: map['fcmToken'],
       isOnline: map['isOnline'] ?? false,
       lastSeen: (map['lastSeen'] as Timestamp?)?.toDate() ?? DateTime.now(),
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -37,6 +40,7 @@ class UserModel {
       'name': name,
       'email': email,
       'photoUrl': photoUrl,
+      'fcmToken': fcmToken,
       'isOnline': isOnline,
       'lastSeen': Timestamp.fromDate(lastSeen),
       'createdAt': Timestamp.fromDate(createdAt),
@@ -46,6 +50,7 @@ class UserModel {
   UserModel copyWith({
     String? name,
     String? photoUrl,
+    String? fcmToken,
     bool? isOnline,
     DateTime? lastSeen,
   }) {
@@ -54,6 +59,7 @@ class UserModel {
       name: name ?? this.name,
       email: email,
       photoUrl: photoUrl ?? this.photoUrl,
+      fcmToken: fcmToken ?? this.fcmToken,
       isOnline: isOnline ?? this.isOnline,
       lastSeen: lastSeen ?? this.lastSeen,
       createdAt: createdAt,

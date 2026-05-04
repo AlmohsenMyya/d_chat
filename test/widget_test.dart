@@ -20,6 +20,8 @@ class FakeAuthService implements AuthService {
   @override
   Future<UserCredential> signUp(String email, String password, String name, {File? imageFile}) => throw UnimplementedError();
   @override
+  Future<void> updateFCMToken(String uid, String? token) => Future.value();
+  @override
   Future<void> signOut() => Future.value();
   @override
   Future<String?> uploadProfileImage(String uid, File imageFile) => Future.value(null);

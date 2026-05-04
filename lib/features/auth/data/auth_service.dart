@@ -106,6 +106,14 @@ class AuthService {
     }
   }
 
+  // Update FCM Token
+  Future<void> updateFCMToken(String uid, String? token) async {
+    if (token == null) return;
+    await _firestore.collection('users').doc(uid).update({
+      'fcmToken': token,
+    });
+  }
+
   // Sign out
   Future<void> signOut() async {
     if (_auth.currentUser != null) {

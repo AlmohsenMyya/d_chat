@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import '../data/auth_service.dart';
 import '../../../core/services/presence_service.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../core/utils/navigation_service.dart';
 import '../../../core/utils/app_routes.dart';
 
@@ -11,6 +12,7 @@ class AuthProvider with ChangeNotifier {
   final AuthService _authService;
   final NavigationService _navigationService;
   final PresenceService? _presenceService;
+  final NotificationService? _notificationService;
   
   User? _user;
   bool _isLoading = false;
@@ -25,15 +27,23 @@ class AuthProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   File? get pickedImage => _pickedImage;
 
-  AuthProvider(this._authService, this._navigationService, [this._presenceService]) {
+  AuthProvider(this._authService, this._navigationService, [this._presenceService, this._notificationService]) {
     _authService.authStateChanges.listen((User? user) {
       _user = user;
       _isInitialized = true;
       if (user != null) {
         _presenceService?.configurePresence(user.uid);
+        _setupNotifications(user.uid);
       }
       notifyListeners();
     });
+  }
+
+  Future<void> _setupNotifications(String uid) async {
+    if (_notificationService == null) return;
+    await _notificationService!.initialize();
+    final token = await _notificationService!.getToken();
+    await _authService.updateFCMToken(uid, token);
   }
 
   void _setLoading(bool value) {
