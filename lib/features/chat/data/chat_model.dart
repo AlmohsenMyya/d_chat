@@ -6,6 +6,7 @@ class ChatModel {
   final String lastMessage;
   final DateTime lastMessageTime;
   final DateTime createdAt;
+  final Map<String, int> unreadCounts;
 
   ChatModel({
     required this.chatId,
@@ -13,6 +14,7 @@ class ChatModel {
     required this.lastMessage,
     required this.lastMessageTime,
     required this.createdAt,
+    required this.unreadCounts,
   });
 
   factory ChatModel.fromMap(Map<String, dynamic> map, String id) {
@@ -22,6 +24,7 @@ class ChatModel {
       lastMessage: map['lastMessage'] ?? '',
       lastMessageTime: (map['lastMessageTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      unreadCounts: Map<String, int>.from(map['unreadCounts'] ?? {}),
     );
   }
 
@@ -31,6 +34,7 @@ class ChatModel {
       'lastMessage': lastMessage,
       'lastMessageTime': Timestamp.fromDate(lastMessageTime),
       'createdAt': Timestamp.fromDate(createdAt),
+      'unreadCounts': unreadCounts,
     };
   }
 }

@@ -28,7 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    final authProvider = context.read<AuthProvider>();
 
     return Scaffold(
       body: SafeArea(

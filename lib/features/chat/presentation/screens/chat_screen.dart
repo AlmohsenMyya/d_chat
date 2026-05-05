@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/widgets/chat_bubble.dart';
 import '../../../../shared/widgets/shimmer_skeletons.dart';
+import '../../../user/data/user_service.dart';
 import '../../provider/chat_provider.dart';
 import '../../../user/data/user_model.dart';
 
@@ -17,6 +18,15 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ChatProvider>().clearChatNotifications();
+    });
+  }
 
   @override
   void dispose() {
@@ -38,25 +48,38 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundImage: widget.user.photoUrl != null ? NetworkImage(widget.user.photoUrl!) : null,
-              child: widget.user.photoUrl == null ? const Icon(Icons.person, size: 18) : null,
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        title: StreamBuilder<UserModel?>(
+          stream: context.read<UserService>().getUserStream(widget.user.uid),
+          builder: (context, snapshot) {
+            final user = snapshot.data ?? widget.user;
+
+            return Row(
               children: [
-                Text(widget.user.name, style: const TextStyle(fontSize: 16)),
-                Text(
-                  widget.user.isOnline ? (loc?.translate('online') ?? "Online") : (loc?.translate('offline') ?? "Offline"),
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+                CircleAvatar(
+                  radius: 18,
+                  backgroundImage: user.photoUrl != null
+                      ? NetworkImage(user.photoUrl!)
+                      : null,
+                  child: user.photoUrl == null
+                      ? const Icon(Icons.person, size: 18)
+                      : null,
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(user.name, style: const TextStyle(fontSize: 16)),
+                    Text(
+                      user.isOnline
+                          ? (loc?.translate('online') ?? "Online")
+                          : "${loc?.translate('last_seen') ?? "Last seen"} ${context.read<UserService>().timeAgo(user.lastSeen, loc)}",
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
+            );
+          },
         ),
       ),
       body: Column(
@@ -66,7 +89,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 ? ListView.builder(
                     reverse: true,
                     itemCount: 5,
-                    itemBuilder: (context, index) => ShimmerChatBubble(isMe: index % 2 == 0),
+                    itemBuilder: (context, index) =>
+                        ShimmerChatBubble(isMe: index % 2 == 0),
                   )
                 : Stack(
                     children: [
@@ -78,7 +102,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           final message = chatProvider.messages[index];
                           return ChatBubble(
                             message: message,
-                            isMe: message.senderId == chatProvider.currentUserId,
+                            isMe:
+                                message.senderId == chatProvider.currentUserId,
                           );
                         },
                       ),
@@ -112,7 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, -1),
             blurRadius: 5,
           ),
@@ -122,7 +147,10 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Row(
           children: [
             IconButton(
-              icon: Icon(Icons.image_outlined, color: Theme.of(context).primaryColor),
+              icon: Icon(
+                Icons.image_outlined,
+                color: Theme.of(context).primaryColor,
+              ),
               onPressed: () => provider.sendImageMessage(),
             ),
             Expanded(
@@ -135,7 +163,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: TextField(
                   controller: _messageController,
                   decoration: InputDecoration(
-                    hintText: loc?.translate('type_message') ?? "Type a message...",
+                    hintText:
+                        loc?.translate('type_message') ?? "Type a message...",
                     border: InputBorder.none,
                   ),
                   maxLines: 4,

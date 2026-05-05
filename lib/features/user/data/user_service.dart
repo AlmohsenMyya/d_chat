@@ -11,9 +11,23 @@ class UserService {
         .where('uid', isNotEqualTo: currentUserId)
         .snapshots()
         .map((snapshot) => snapshot.docs
-            .map((doc) => UserModel.fromMap(doc.data()))
-            .toList());
-    // Get a single user by ID
+        .map((doc) => UserModel.fromMap(doc.data()))
+        .toList());
+  }
+
+  // 🔥 الحل للمشكلة (real-time user)
+  Stream<UserModel?> getUserStream(String uid) {
+    return _firestore
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .map((doc) {
+      if (!doc.exists || doc.data() == null) return null;
+      return UserModel.fromMap(doc.data()!);
+    });
+  }
+
+  // Get user مرة واحدة (اختياري)
   Future<UserModel?> getUserById(String uid) async {
     final doc = await _firestore.collection('users').doc(uid).get();
     if (doc.exists && doc.data() != null) {
@@ -21,11 +35,10 @@ class UserService {
     }
     return null;
   }
-}
 
-  // Optional: Server-side search (limited by Firestore capabilities)
-  // For better search, we'll implement client-side filtering in the Provider
-  Future<List<UserModel>> searchUsersByName(String query, String currentUserId) async {
+  // Search
+  Future<List<UserModel>> searchUsersByName(
+      String query, String currentUserId) async {
     final snapshot = await _firestore
         .collection('users')
         .where('name', isGreaterThanOrEqualTo: query)
@@ -36,21 +49,25 @@ class UserService {
         .map((doc) => UserModel.fromMap(doc.data()))
         .where((user) => user.uid != currentUserId)
         .toList();
-    // Get a single user by ID
-  Future<UserModel?> getUserById(String uid) async {
-    final doc = await _firestore.collection('users').doc(uid).get();
-    if (doc.exists && doc.data() != null) {
-      return UserModel.fromMap(doc.data()!);
-    }
-    return null;
   }
-}
-  // Get a single user by ID
-  Future<UserModel?> getUserById(String uid) async {
-    final doc = await _firestore.collection('users').doc(uid).get();
-    if (doc.exists && doc.data() != null) {
-      return UserModel.fromMap(doc.data()!);
+
+  String timeAgo(DateTime? date, dynamic loc) {
+    if (date == null) return "";
+
+    final diff = DateTime.now().difference(date);
+
+    if (diff.inSeconds < 60) {
+      return loc?.translate('just_now') ?? "just now";
     }
-    return null;
+
+    if (diff.inMinutes < 60) {
+      return "${diff.inMinutes} ${loc?.translate('minutes_ago') ?? "min ago"}";
+    }
+
+    if (diff.inHours < 24) {
+      return "${diff.inHours} ${loc?.translate('hours_ago') ?? "h ago"}";
+    }
+
+    return "${diff.inDays} ${loc?.translate('days_ago') ?? "d ago"}";
   }
 }

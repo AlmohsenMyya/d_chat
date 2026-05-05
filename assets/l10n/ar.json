@@ -44,5 +44,10 @@
     "type_message": "اكتب رسالة...",
     "send": "إرسال",
     "today": "اليوم",
-    "yesterday": "أمس"
+    "yesterday": "أمس",
+    "last_seen": "آخر ظهور",
+    "just_now": "الآن",
+    "minutes_ago": "دقيقة",
+    "hours_ago": "ساعة",
+    "days_ago": "يوم"
 }

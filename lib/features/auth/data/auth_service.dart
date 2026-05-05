@@ -5,14 +5,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import '../../user/data/user_model.dart';
+import '../../../core/constants/app_config.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Cloudinary Configuration
-  final String _cloudinaryUrl = "https://api.cloudinary.com/v1_1/dyvsf3nd8/image/upload";
-  final String _uploadPreset = "unsigned_preset";
+  final String _cloudinaryUrl = AppConfig.cloudinaryUrl;
+  final String _uploadPreset = AppConfig.cloudinaryUploadPreset;
 
   // Get current user
   User? get currentUser => _auth.currentUser;

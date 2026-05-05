@@ -44,5 +44,10 @@
     "type_message": "Type a message...",
     "send": "Send",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "last_seen": "Last seen",
+    "just_now": "just now",
+    "minutes_ago": "min ago",
+    "hours_ago": "h ago",
+    "days_ago": "d ago"
 }

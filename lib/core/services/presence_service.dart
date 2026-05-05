@@ -1,57 +1,99 @@
+import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 
-class PresenceService {
-  final FirebaseDatabase _database = FirebaseDatabase.instance;
+class PresenceService with WidgetsBindingObserver {
+  final FirebaseDatabase _database = FirebaseDatabase.instanceFor(
+    app: Firebase.app(),
+    databaseURL: "https://d-chat-84fd0-default-rtdb.firebaseio.com/",
+  );
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  void configurePresence(String uid) {
-    // Reference to the user's presence in Realtime Database
+  String? _currentUid;
+
+  StreamSubscription? _connectionSub;
+  StreamSubscription? _presenceSub;
+
+  void configurePresence(String uid) async {
+    _currentUid = uid;
+
     final presenceRef = _database.ref('status/$uid');
-    // Reference to the user's document in Firestore
-    final userFirestoreRef = _firestore.collection('users').doc(uid);
+    final userRef = _firestore.collection('users').doc(uid);
 
-    // .info/connected is a special location that returns true when connected and false when disconnected
-    _database.ref('.info/connected').onValue.listen((event) async {
-      final connected = event.snapshot.value as bool? ?? false;
-      
-      if (connected) {
-        // When connected, set Realtime DB status to true and configure onDisconnect
-        await presenceRef.set(true);
-        
-        // When the client disconnects (app kill, crash, network loss), 
-        // Realtime DB will automatically set this to false on the server side.
-        presenceRef.onDisconnect().set(false);
+    WidgetsBinding.instance.addObserver(this);
 
-        // Update Firestore to Online
-        await userFirestoreRef.update({
-          'isOnline': true,
-          'lastSeen': FieldValue.serverTimestamp(),
+    // 🔌 مراقبة الاتصال
+    _connectionSub =
+        _database.ref('.info/connected').onValue.listen((event) async {
+          final connected = event.snapshot.value;
+          final isConnected = connected as bool? ?? false;
+
+          if (!isConnected) return;
+
+          try {
+            // ❗ onDisconnect
+            await presenceRef.onDisconnect().set({
+              'state': 'offline',
+              'last_changed': ServerValue.timestamp,
+            });
+
+            // ✳️ set online
+            await presenceRef.set({
+              'state': 'online',
+              'last_changed': ServerValue.timestamp,
+            });
+          } catch (e) {
+            debugPrint("Presence RTDB Error: $e");
+          }
         });
 
-        // Optional: We can also sync the Firestore offline status via a Cloud Function 
-        // listening to RTDB, but for this prototype, we'll use a local onDisconnect
-        // trick if possible, or just rely on the fact that RTDB is the source of truth.
-        // For D-chat, we'll stick to updating Firestore directly.
-      }
-    });
+    // 🔁 bridge من RTDB إلى Firestore
+    _presenceSub = presenceRef.onValue.listen((event) {
+      final raw = event.snapshot.value;
+      if (raw == null || raw is! Map) return;
 
-    // Listen to changes in RTDB to update Firestore (The Bridge)
-    presenceRef.onValue.listen((event) {
-      final isOnline = event.snapshot.value as bool? ?? false;
-      userFirestoreRef.update({
-        'isOnline': isOnline,
-        'lastSeen': FieldValue.serverTimestamp(),
-      });
+      final data = Map<String, dynamic>.from(raw);
+      final isOnline = data['state'] == 'online';
+      final lastChanged = data['last_changed'];
+
+      try {
+        userRef.update({
+          'isOnline': isOnline,
+          'lastSeen': lastChanged != null
+              ? Timestamp.fromMillisecondsSinceEpoch(lastChanged)
+              : FieldValue.serverTimestamp(),
+        });
+      } catch (e) {
+        debugPrint("Presence Firestore update error: $e");
+      }
     });
   }
 
-  Future<void> setOffline(String uid) async {
-    await _database.ref('status/$uid').set(false);
-    await _firestore.collection('users').doc(uid).update({
-      'isOnline': false,
-      'lastSeen': FieldValue.serverTimestamp(),
-    });
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_currentUid == null) return;
+
+    final presenceRef = _database.ref('status/$_currentUid');
+
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      presenceRef.set({
+        'state': 'offline',
+        'last_changed': ServerValue.timestamp,
+      });
+    } else if (state == AppLifecycleState.resumed) {
+      presenceRef.set({
+        'state': 'online',
+        'last_changed': ServerValue.timestamp,
+      });
+    }
+  }
+
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _connectionSub?.cancel();
+    _presenceSub?.cancel();
   }
 }

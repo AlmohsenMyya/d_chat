@@ -81,12 +81,13 @@ Responsible for data handling and external services.
 
 Includes:
 
-* Firebase services
-* Repositories
+* Firebase services (Auth, Firestore, RTDB, FCM)
+* Cloudinary API (Media Storage)
+* Repositories / Services
 
 Responsibilities:
 
-* Communicate with Firebase
+* Communicate with Firebase & Cloudinary
 * Handle data operations
 * Abstract data sources
 
@@ -96,6 +97,8 @@ Examples:
 * ChatService
 * UserService
 * NotificationService
+* PresenceService
+* MediaService (New)
 
 ---
 
@@ -107,13 +110,14 @@ lib/
 │   ├── constants/
 │   ├── theme/
 │   ├── localization/
+│   ├── services/         # Global services (Notification, Presence)
 │   └── utils/
 │
 ├── features/
 │   ├── auth/
 │   │   ├── presentation/
 │   │   ├── provider/
-│   │   └── data/
+│   │   └── data/         # Services & Models
 │   │
 │   ├── chat/
 │   │   ├── presentation/
@@ -121,16 +125,13 @@ lib/
 │   │   └── data/
 │   │
 │   ├── user/
-│   │   ├── presentation/
-│   │   ├── provider/
-│   │   └── data/
-│   │
+│   ├── home/
 │   ├── profile/
 │   └── settings/
 │
 ├── shared/
 │   ├── widgets/
-│   └── services/
+│   └── services/         # Shared services (MediaService)
 │
 └── main.dart
 

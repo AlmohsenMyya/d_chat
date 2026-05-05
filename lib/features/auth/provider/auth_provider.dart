@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart';
 import '../data/auth_service.dart';
 import '../../../core/services/presence_service.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../shared/services/media_service.dart';
 import '../../../core/utils/navigation_service.dart';
 import '../../../core/utils/app_routes.dart';
 
@@ -13,7 +13,13 @@ class AuthProvider with ChangeNotifier {
   final NavigationService _navigationService;
   final PresenceService? _presenceService;
   final NotificationService? _notificationService;
-  
+  final MediaService _mediaService;
+
+  @override
+  void dispose() {
+    _presenceService?.dispose();
+    super.dispose();
+  }
   User? _user;
   bool _isLoading = false;
   bool _isInitialized = false;
@@ -27,7 +33,13 @@ class AuthProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   File? get pickedImage => _pickedImage;
 
-  AuthProvider(this._authService, this._navigationService, [this._presenceService, this._notificationService]) {
+  AuthProvider(
+    this._authService,
+    this._navigationService,
+    this._mediaService, [
+    this._presenceService,
+    this._notificationService,
+  ]) {
     _authService.authStateChanges.listen((User? user) {
       _user = user;
       _isInitialized = true;
@@ -41,8 +53,8 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _setupNotifications(String uid) async {
     if (_notificationService == null) return;
-    await _notificationService!.initialize();
-    final token = await _notificationService!.getToken();
+    await _notificationService.initialize();
+    final token = await _notificationService.getToken();
     await _authService.updateFCMToken(uid, token);
   }
 
@@ -58,10 +70,9 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> pickProfileImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
-    if (pickedFile != null) {
-      _pickedImage = File(pickedFile.path);
+    final image = await _mediaService.pickImageFromGallery();
+    if (image != null) {
+      _pickedImage = image;
       notifyListeners();
     }
   }
@@ -114,7 +125,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> signOut() async {
     try {
       if (_user != null && _presenceService != null) {
-        await _presenceService!.setOffline(_user!.uid);
+        // await _presenceService!.setOffline(_user!.uid);
       }
       await _authService.signOut();
       _navigationService.replaceWith(AppRoutes.login);

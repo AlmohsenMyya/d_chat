@@ -8,6 +8,7 @@ import 'package:d_chat/core/localization/language_provider.dart';
 import 'package:d_chat/core/utils/navigation_service.dart';
 import 'package:d_chat/features/auth/provider/auth_provider.dart';
 import 'package:d_chat/features/auth/data/auth_service.dart';
+import 'package:d_chat/shared/services/media_service.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 
 class FakeAuthService implements AuthService {
@@ -27,9 +28,15 @@ class FakeAuthService implements AuthService {
   Future<String?> uploadProfileImage(File imageFile) => Future.value(null);
 }
 
+class FakeMediaService implements MediaService {
+  @override
+  Future<File?> pickImageFromGallery({int imageQuality = 50}) => Future.value(null);
+}
+
 void main() {
   testWidgets('App starts and shows splash screen', (WidgetTester tester) async {
     final fakeAuthService = FakeAuthService();
+    final fakeMediaService = FakeMediaService();
     final navService = NavigationService();
     final languageProvider = LanguageProvider();
     languageProvider.setLocale(const Locale('ar')); // Set to Arabic for test
@@ -39,7 +46,7 @@ void main() {
         providers: [
           Provider<NavigationService>.value(value: navService),
           Provider<AuthService>.value(value: fakeAuthService),
-          ChangeNotifierProvider(create: (_) => AuthProvider(fakeAuthService, navService)),
+          ChangeNotifierProvider(create: (_) => AuthProvider(fakeAuthService, navService, fakeMediaService)),
           ChangeNotifierProvider(create: (_) => ThemeProvider()),
           ChangeNotifierProvider.value(value: languageProvider),
         ],

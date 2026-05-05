@@ -54,6 +54,7 @@ class DefaultFirebaseOptions {
     authDomain: 'd-chat-84fd0.firebaseapp.com',
     storageBucket: 'd-chat-84fd0.firebasestorage.app',
     measurementId: 'G-6G25CPSFF9',
+    databaseURL: 'https://d-chat-84fd0-default-rtdb.firebaseio.com/',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -62,6 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1042097751372',
     projectId: 'd-chat-84fd0',
     storageBucket: 'd-chat-84fd0.firebasestorage.app',
+    databaseURL: 'https://d-chat-84fd0-default-rtdb.firebaseio.com/',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -71,5 +73,6 @@ class DefaultFirebaseOptions {
     projectId: 'd-chat-84fd0',
     storageBucket: 'd-chat-84fd0.firebasestorage.app',
     iosBundleId: 'com.example.dChat',
+    databaseURL: 'https://d-chat-84fd0-default-rtdb.firebaseio.com/',
   );
 }

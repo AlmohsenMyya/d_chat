@@ -39,15 +39,19 @@ This report details the implementation of professional-grade features, elevating
     - **Profile Images**: Seamlessly integrated into the registration flow.
 - **Result**: Secure HTTPS URLs (`secure_url`) are now stored in Firestore, and the project is 100% free of Firebase Storage dependencies.
 
-## 5. UI Polish & Perceived Performance (Shimmer)
-- **Objective**: Modernize the loading experience.
+## 6. Unread Message Management
+- **Objective**: Track new messages for users when they are outside the chat.
 - **Implementation**:
-    - Integrated the `shimmer` package.
-    - Replaced `CircularProgressIndicator` with custom skeleton loaders:
-        - `ShimmerChatTile`: Mimics conversation rows.
-        - `ShimmerUserTile`: Mimics search results.
-        - `ShimmerChatBubble`: Mimics message flow.
-    - **Impact**: Reduced "blank screen" anxiety and improved the overall professional feel of the app.
+    - Added `unreadCounts` map to the `chat` document in Firestore.
+    - **Logic**: Increments for the receiver and resets for the sender on every new message.
+    - **UI**: Displayed a badge on `ChatTile` in the Home Screen.
+
+## 7. Direct Device-to-Device Notifications (FCM v1)
+- **Objective**: Bypass Cloud Functions for immediate delivery.
+- **Implementation**:
+    - Integrated `googleapis_auth` to generate OAuth2 tokens on-the-fly.
+    - The sender's app calls the FCM v1 REST API directly after saving the message to Firestore.
+    - **Result**: Instant notifications without server-side compute costs.
 
 ---
 
