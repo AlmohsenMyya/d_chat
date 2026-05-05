@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../user/data/user_service.dart';
 import '../../../shared/services/media_service.dart';
@@ -45,12 +46,14 @@ class ProfileProvider with ChangeNotifier {
       await _userService.updateUserProfile(uid, name: name, photoUrl: photoUrl);
       
       // Update Firebase Auth metadata
-      final user = _authService.currentUser;
+      final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await user.updateDisplayName(name);
         if (photoUrl != null) {
           await user.updatePhotoURL(photoUrl);
         }
+        // Force refresh the user session locally
+        await user.reload();
       }
 
       _pickedImage = null;

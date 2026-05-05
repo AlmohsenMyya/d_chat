@@ -79,16 +79,20 @@ class PresenceService with WidgetsBindingObserver {
 
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
-      presenceRef.set({
-        'state': 'offline',
-        'last_changed': ServerValue.timestamp,
-      });
+      setOffline(_currentUid!);
     } else if (state == AppLifecycleState.resumed) {
-      presenceRef.set({
+      _database.ref('status/$_currentUid').set({
         'state': 'online',
         'last_changed': ServerValue.timestamp,
       });
     }
+  }
+
+  Future<void> setOffline(String uid) async {
+    await _database.ref('status/$uid').set({
+      'state': 'offline',
+      'last_changed': ServerValue.timestamp,
+    });
   }
 
   void dispose() {

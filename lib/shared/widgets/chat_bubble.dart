@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../core/utils/cloudinary_helper.dart';
 import '../../features/chat/data/message_model.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -51,7 +52,7 @@ class ChatBubble extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.network(
-                    message.imageUrl!,
+                    CloudinaryHelper.getOptimizedUrl(message.imageUrl, width: 400),
                     fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;

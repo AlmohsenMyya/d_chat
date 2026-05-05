@@ -9,6 +9,7 @@ import 'features/chat/data/chat_service.dart';
 import 'features/home/provider/home_provider.dart';
 import 'core/services/presence_service.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/connectivity_service.dart';
 import 'shared/services/media_service.dart';
 import 'features/user/data/user_service.dart';
 import 'features/user/provider/user_provider.dart';
@@ -18,6 +19,7 @@ import 'core/localization/language_provider.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/utils/app_routes.dart';
 import 'core/utils/navigation_service.dart';
+import 'shared/widgets/connectivity_wrapper.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -38,6 +40,7 @@ void main() async {
     MultiProvider(
       providers: [
         Provider<NavigationService>.value(value: navigationService),
+        Provider<ConnectivityService>(create: (_) => ConnectivityService()),
         Provider<AuthService>(create: (_) => AuthService()),
         Provider<UserService>(create: (_) => UserService()),
         Provider<NotificationService>(create: (_) => NotificationService()),
@@ -111,6 +114,9 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      builder: (context, child) {
+        return ConnectivityWrapper(child: child!);
+      },
       onGenerateRoute: AppRoutes.generateRoute,
       initialRoute: AppRoutes.splash,
     );

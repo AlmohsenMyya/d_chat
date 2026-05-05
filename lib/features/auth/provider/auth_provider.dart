@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,11 +16,7 @@ class AuthProvider with ChangeNotifier {
   final NotificationService? _notificationService;
   final MediaService _mediaService;
 
-  @override
-  void dispose() {
-    _presenceService?.dispose();
-    super.dispose();
-  }
+  StreamSubscription? _authSubscription;
   User? _user;
   bool _isLoading = false;
   bool _isInitialized = false;
@@ -40,22 +37,37 @@ class AuthProvider with ChangeNotifier {
     this._presenceService,
     this._notificationService,
   ]) {
-    _authService.authStateChanges.listen((User? user) {
-      _user = user;
-      _isInitialized = true;
+    _authSubscription = _authService.authStateChanges.listen((User? user) async {
       if (user != null) {
-        _presenceService?.configurePresence(user.uid);
-        _setupNotifications(user.uid);
+        // Force reload to get latest metadata like photoURL
+        await user.reload();
+        _user = FirebaseAuth.instance.currentUser;
+        
+        _presenceService?.configurePresence(_user!.uid);
+        _setupNotifications(_user!.uid);
+      } else {
+        _user = null;
       }
+      _isInitialized = true;
       notifyListeners();
     });
   }
 
   Future<void> _setupNotifications(String uid) async {
     if (_notificationService == null) return;
-    await _notificationService.initialize();
-    final token = await _notificationService.getToken();
+    await _notificationService!.initialize();
+    final token = await _notificationService!.getToken();
     await _authService.updateFCMToken(uid, token);
+  }
+
+  /// Force a fresh fetch of the current user data (Syncs UI after profile updates)
+  Future<void> refreshUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await user.reload();
+      _user = FirebaseAuth.instance.currentUser;
+      notifyListeners();
+    }
   }
 
   void _setLoading(bool value) {
@@ -95,6 +107,7 @@ class AuthProvider with ChangeNotifier {
     _setLoading(true);
     try {
       await _authService.signUp(email, password, name, imageFile: _pickedImage);
+      // Wait for authStateChanges to finish reload
       _navigationService.pushAndRemoveUntil(AppRoutes.home);
     } on FirebaseAuthException catch (e) {
       _setError(_mapFirebaseError(e.code));
@@ -125,7 +138,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> signOut() async {
     try {
       if (_user != null && _presenceService != null) {
-        // await _presenceService!.setOffline(_user!.uid);
+         await _presenceService!.setOffline(_user!.uid);
       }
       await _authService.signOut();
       _navigationService.replaceWith(AppRoutes.login);
@@ -142,5 +155,12 @@ class AuthProvider with ChangeNotifier {
   void clearError() {
     _errorMessage = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    _presenceService?.dispose();
+    super.dispose();
   }
 }

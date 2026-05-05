@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../data/user_model.dart';
 import '../data/user_service.dart';
@@ -9,6 +10,7 @@ class UserProvider with ChangeNotifier {
   final NavigationService _navigationService;
   final String _currentUserId;
 
+  StreamSubscription? _userSubscription;
   List<UserModel> _allUsers = [];
   List<UserModel> _filteredUsers = [];
   bool _isLoading = true;
@@ -23,7 +25,7 @@ class UserProvider with ChangeNotifier {
   }
 
   void _initUsersStream() {
-    _userService.getUsersStream(_currentUserId).listen((users) {
+    _userSubscription = _userService.getUsersStream(_currentUserId).listen((users) {
       _allUsers = users;
       _filterUsers();
       _isLoading = false;
@@ -49,7 +51,12 @@ class UserProvider with ChangeNotifier {
   }
 
   void selectUser(UserModel user) {
-    // In Sprint 4, we will pass the user to the Chat Screen
     _navigationService.navigateTo(AppRoutes.chat, arguments: user);
+  }
+
+  @override
+  void dispose() {
+    _userSubscription?.cancel();
+    super.dispose();
   }
 }

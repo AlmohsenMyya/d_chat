@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../../../core/utils/cloudinary_helper.dart';
 import '../../../user/data/user_model.dart';
 import '../../../user/data/user_service.dart';
 
@@ -50,7 +51,7 @@ class ChatTile extends StatelessWidget {
                   radius: 28,
                   backgroundColor: Colors.grey[300],
                   backgroundImage: user.photoUrl != null
-                      ? NetworkImage(user.photoUrl!)
+                      ? NetworkImage(CloudinaryHelper.getOptimizedUrl(user.photoUrl, width: 100, height: 100))
                       : null,
                   child: user.photoUrl == null
                       ? const Icon(Icons.person, color: Colors.white)

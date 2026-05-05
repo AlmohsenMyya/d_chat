@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/utils/cloudinary_helper.dart';
 import '../../../../shared/widgets/chat_bubble.dart';
 import '../../../../shared/widgets/shimmer_skeletons.dart';
 import '../../../user/data/user_service.dart';
@@ -58,12 +59,11 @@ class _ChatScreenState extends State<ChatScreen> {
             return Row(
               children: [
                 Hero(
-
                   tag: 'avatar_${user.uid}',
                   child: CircleAvatar(
                     radius: 18,
                     backgroundImage: user.photoUrl != null
-                        ? NetworkImage(user.photoUrl!)
+                        ? NetworkImage(CloudinaryHelper.getOptimizedUrl(user.photoUrl, width: 80, height: 80))
                         : null,
                     child: user.photoUrl == null
                         ? const Icon(Icons.person, size: 18)
@@ -174,7 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Icon(
                     Icons.image_outlined,
-                    color: Colors.white,
+                    color: theme.primaryColor,
                     size: 28,
                   ),
                 ),
@@ -191,11 +191,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 child: TextField(
                   controller: _messageController,
-                  style:  TextStyle(fontSize: 16 , color: theme.primaryColor),
+                  style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
                     hintText: loc?.translate('type_message') ?? "Type a message...",
                     hintStyle: TextStyle(color: Colors.grey[500]),
-                    fillColor : Colors.grey[100],
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 8),
                     isDense: true,

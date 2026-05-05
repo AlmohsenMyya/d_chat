@@ -60,5 +60,6 @@
     "version": "Version",
     "save": "Save",
     "name": "Name",
-    "profile_updated": "Profile updated successfully"
+    "profile_updated": "Profile updated successfully",
+    "offline_mode": "Offline Mode - Check your connection"
 }

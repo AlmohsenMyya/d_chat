@@ -112,6 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               _nameController.text.trim(),
                             );
                             if (success && mounted) {
+                              await authProvider.refreshUser(); // 👈 تحديث الحالة العالمية فوراً
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(loc?.translate('profile_updated') ?? "Profile updated")),
                               );

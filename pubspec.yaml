@@ -57,6 +57,7 @@ dependencies:
   googleapis_auth: ^2.3.0
   flutter_local_notifications: ^21.0.0
   flutter_dotenv: ^5.2.1
+  connectivity_plus: ^7.1.1
 
 dev_dependencies:
   flutter_test:
