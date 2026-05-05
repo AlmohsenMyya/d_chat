@@ -96,7 +96,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     children: [
                       ListView.builder(
                         reverse: true,
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                         itemCount: chatProvider.messages.length,
                         itemBuilder: (context, index) {
                           final message = chatProvider.messages[index];
@@ -146,23 +146,33 @@ class _ChatScreenState extends State<ChatScreen> {
       child: SafeArea(
         child: Row(
           children: [
-            IconButton(
-              icon: Icon(
-                Icons.image_outlined,
-                color: Theme.of(context).primaryColor,
+
+            Container(
+              decoration: BoxDecoration(
+                color:Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.circular(24),
               ),
-              onPressed: () => provider.sendImageMessage(),
+              child: IconButton(
+                icon: Icon(
+                  Icons.image_outlined,
+                  color: Colors.white,
+                ),
+                onPressed: () => provider.sendImageMessage(),
+              ),
             ),
+            const SizedBox(width: 8),
             Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 22),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(24),
+                  color:Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(25),
                 ),
                 child: TextField(
                   controller: _messageController,
                   decoration: InputDecoration(
+                    fillColor: Theme.of(context).primaryColor,
+                    hintStyle: TextStyle(color: Colors.white),
                     hintText:
                         loc?.translate('type_message') ?? "Type a message...",
                     border: InputBorder.none,

@@ -49,5 +49,16 @@
     "just_now": "just now",
     "minutes_ago": "min ago",
     "hours_ago": "h ago",
-    "days_ago": "d ago"
+    "days_ago": "d ago",
+    "settings": "Settings",
+    "profile": "Profile",
+    "appearance": "Appearance",
+    "dark_mode": "Dark Mode",
+    "language": "Language",
+    "app_language": "App Language",
+    "about": "About",
+    "version": "Version",
+    "save": "Save",
+    "name": "Name",
+    "profile_updated": "Profile updated successfully"
 }

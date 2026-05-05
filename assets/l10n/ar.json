@@ -49,5 +49,16 @@
     "just_now": "الآن",
     "minutes_ago": "دقيقة",
     "hours_ago": "ساعة",
-    "days_ago": "يوم"
+    "days_ago": "يوم",
+    "settings": "الإعدادات",
+    "profile": "الملف الشخصي",
+    "appearance": "المظهر",
+    "dark_mode": "الوضع الليلي",
+    "language": "اللغة",
+    "app_language": "لغة التطبيق",
+    "about": "حول التطبيق",
+    "version": "الإصدار",
+    "save": "حفظ",
+    "name": "الاسم",
+    "profile_updated": "تم تحديث الملف الشخصي بنجاح"
 }

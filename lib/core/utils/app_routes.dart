@@ -12,6 +12,11 @@ import '../../features/chat/provider/chat_provider.dart';
 import '../../features/chat/data/chat_service.dart';
 import '../../shared/services/media_service.dart';
 import '../../features/auth/provider/auth_provider.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/profile/provider/profile_provider.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/user/data/user_service.dart';
+import '../../features/auth/data/auth_service.dart';
 import 'navigation_service.dart';
 
 class AppRoutes {
@@ -25,8 +30,8 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String profile = '/profile';
 
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
+  static Route<dynamic> generateRoute(RouteSettings routeSettings) {
+    switch (routeSettings.name) {
       case splash:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
       case onboarding:
@@ -39,8 +44,21 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case users:
         return MaterialPageRoute(builder: (_) => const UsersScreen());
+      case profile:
+        return MaterialPageRoute(
+          builder: (context) => ChangeNotifierProvider(
+            create: (context) => ProfileProvider(
+              context.read<UserService>(),
+              context.read<MediaService>(),
+              context.read<AuthService>(),
+            ),
+            child: const ProfileScreen(),
+          ),
+        );
+      case settings:
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
       case chat:
-        final targetUser = settings.arguments as UserModel;
+        final targetUser = routeSettings.arguments as UserModel;
         return MaterialPageRoute(
           builder: (context) {
             final authProvider = context.read<AuthProvider>();
@@ -59,7 +77,7 @@ class AppRoutes {
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
-            body: Center(child: Text('No route defined for ${settings.name}')),
+            body: Center(child: Text('No route defined for ${routeSettings.name}')),
           ),
         );
     }
