@@ -24,7 +24,7 @@ class FakeAuthService implements AuthService {
   @override
   Future<void> signOut() => Future.value();
   @override
-  Future<String?> uploadProfileImage(String uid, File imageFile) => Future.value(null);
+  Future<String?> uploadProfileImage(File imageFile) => Future.value(null);
 }
 
 void main() {

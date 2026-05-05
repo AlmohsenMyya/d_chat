@@ -29,12 +29,15 @@ This report details the implementation of professional-grade features, elevating
     - **Token Lifecycle**: Automatically fetches and updates the user's `fcmToken` in Firestore upon every login or app start.
     - **Architecture**: Decoupled the service from the UI, making it fully injectable and testable.
 
-## 4. Image Messaging
-- **Objective**: Support rich media sharing.
+## 4. Media Messaging & Storage Migration (Cloudinary)
+- **Objective**: Move from Firebase Storage to Cloudinary for scalable and independent media management.
+- **Surgical Replacement**: 
+    - Replaced the storage engine in `ChatService` and `AuthService` without changing the Provider or UI layers.
+    - Implemented Cloudinary REST API integration using `http` and `multipart/form-data`.
 - **Implementation**:
-    - **Service**: Added `uploadChatImage` to `ChatService`, organizing files in `/chat_images/{chatId}/`.
-    - **Provider**: Managed the `isUploading` state to show real-time progress indicators during media uploads.
-    - **UI**: Updated `ChatBubble` with `Image.network` and custom `loadingBuilder` and `errorBuilder` for a seamless media experience.
+    - **Chat Images**: Automated upload during messaging flow.
+    - **Profile Images**: Seamlessly integrated into the registration flow.
+- **Result**: Secure HTTPS URLs (`secure_url`) are now stored in Firestore, and the project is 100% free of Firebase Storage dependencies.
 
 ## 5. UI Polish & Perceived Performance (Shimmer)
 - **Objective**: Modernize the loading experience.

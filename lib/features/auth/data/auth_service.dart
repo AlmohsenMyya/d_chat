@@ -1,13 +1,18 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 import '../../user/data/user_model.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  // Cloudinary Configuration
+  final String _cloudinaryUrl = "https://api.cloudinary.com/v1_1/dyvsf3nd8/image/upload";
+  final String _uploadPreset = "unsigned_preset";
 
   // Get current user
   User? get currentUser => _auth.currentUser;
@@ -15,13 +20,26 @@ class AuthService {
   // Auth state changes stream
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // Upload image to Firebase Storage
-  Future<String?> uploadProfileImage(String uid, File imageFile) async {
+  // Upload image to Cloudinary using REST API (Unsigned)
+  Future<String?> uploadProfileImage(File imageFile) async {
     try {
-      final ref = _storage.ref().child('profile_images').child('$uid.jpg');
-      await ref.putFile(imageFile);
-      return await ref.getDownloadURL();
+      var request = http.MultipartRequest('POST', Uri.parse(_cloudinaryUrl));
+      
+      request.fields['upload_preset'] = _uploadPreset;
+      request.files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+
+      var response = await request.send();
+      
+      if (response.statusCode == 200) {
+        var responseData = await response.stream.toBytes();
+        var responseString = utf8.decode(responseData);
+        var jsonResponse = jsonDecode(responseString);
+        return jsonResponse['secure_url'] as String;
+      } else {
+        throw Exception("Cloudinary upload failed with status: ${response.statusCode}");
+      }
     } catch (e) {
+      debugPrint("Error uploading profile image to Cloudinary: $e");
       return null;
     }
   }
@@ -38,7 +56,7 @@ class AuthService {
       if (credential.user != null) {
         String? photoUrl;
         if (imageFile != null) {
-          photoUrl = await uploadProfileImage(credential.user!.uid, imageFile);
+          photoUrl = await uploadProfileImage(imageFile);
         }
 
         final userModel = UserModel(
