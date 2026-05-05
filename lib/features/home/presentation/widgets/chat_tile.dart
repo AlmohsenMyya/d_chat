@@ -44,15 +44,18 @@ class ChatTile extends StatelessWidget {
           // 👤 الصورة + الحالة
           leading: Stack(
             children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: Colors.grey[300],
-                backgroundImage: user.photoUrl != null
-                    ? NetworkImage(user.photoUrl!)
-                    : null,
-                child: user.photoUrl == null
-                    ? const Icon(Icons.person, color: Colors.white)
-                    : null,
+              Hero(
+                tag: 'avatar_${user.uid}',
+                child: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.grey[300],
+                  backgroundImage: user.photoUrl != null
+                      ? NetworkImage(user.photoUrl!)
+                      : null,
+                  child: user.photoUrl == null
+                      ? const Icon(Icons.person, color: Colors.white)
+                      : null,
+                ),
               ),
               if (user.isOnline)
                 Positioned(

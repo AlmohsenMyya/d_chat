@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/widgets/chat_bubble.dart';
@@ -36,6 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _handleSend(ChatProvider provider) {
     if (_messageController.text.trim().isNotEmpty) {
+      HapticFeedback.lightImpact();
       provider.sendMessage(_messageController.text.trim());
       _messageController.clear();
     }
@@ -55,27 +57,40 @@ class _ChatScreenState extends State<ChatScreen> {
 
             return Row(
               children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundImage: user.photoUrl != null
-                      ? NetworkImage(user.photoUrl!)
-                      : null,
-                  child: user.photoUrl == null
-                      ? const Icon(Icons.person, size: 18)
-                      : null,
+                Hero(
+
+                  tag: 'avatar_${user.uid}',
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundImage: user.photoUrl != null
+                        ? NetworkImage(user.photoUrl!)
+                        : null,
+                    child: user.photoUrl == null
+                        ? const Icon(Icons.person, size: 18)
+                        : null,
+                  ),
                 ),
                 const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(user.name, style: const TextStyle(fontSize: 16)),
-                    Text(
-                      user.isOnline
-                          ? (loc?.translate('online') ?? "Online")
-                          : "${loc?.translate('last_seen') ?? "Last seen"} ${context.read<UserService>().timeAgo(user.lastSeen, loc)}",
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.name,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        user.isOnline
+                            ? (loc?.translate('online') ?? "Online")
+                            : "${loc?.translate('last_seen') ?? "Last seen"} ${context.read<UserService>().timeAgo(user.lastSeen, loc)}",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: user.isOnline ? Colors.green : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             );
@@ -131,51 +146,59 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildInputArea(AppLocalizations? loc, ChatProvider provider) {
+    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: theme.scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            offset: const Offset(0, -1),
-            blurRadius: 5,
+            color: Colors.black.withOpacity(0.05),
+            offset: const Offset(0, -2),
+            blurRadius: 10,
           ),
         ],
       ),
       child: SafeArea(
         child: Row(
           children: [
-
-            Container(
-              decoration: BoxDecoration(
-                color:Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.image_outlined,
-                  color: Colors.white,
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  HapticFeedback.mediumImpact();
+                  provider.sendImageMessage();
+                },
+                borderRadius: BorderRadius.circular(20),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.image_outlined,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                 ),
-                onPressed: () => provider.sendImageMessage(),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 4),
             Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 22),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color:Theme.of(context).primaryColor,
+                  color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(25),
+                  border: Border.all(color: Colors.grey[300]!, width: 0.5),
                 ),
                 child: TextField(
                   controller: _messageController,
+                  style:  TextStyle(fontSize: 16 , color: theme.primaryColor),
                   decoration: InputDecoration(
-                    fillColor: Theme.of(context).primaryColor,
-                    hintStyle: TextStyle(color: Colors.white),
-                    hintText:
-                        loc?.translate('type_message') ?? "Type a message...",
+                    hintText: loc?.translate('type_message') ?? "Type a message...",
+                    hintStyle: TextStyle(color: Colors.grey[500]),
+                    fillColor : Colors.grey[100],
                     border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    isDense: true,
                   ),
                   maxLines: 4,
                   minLines: 1,
@@ -183,11 +206,12 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor,
-              child: IconButton(
-                icon: const Icon(Icons.send, color: Colors.white),
-                onPressed: () => _handleSend(provider),
+            GestureDetector(
+              onTap: () => _handleSend(provider),
+              child: CircleAvatar(
+                radius: 24,
+                backgroundColor: theme.primaryColor,
+                child: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
               ),
             ),
           ],

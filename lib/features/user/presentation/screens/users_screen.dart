@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
+import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../../../shared/widgets/shimmer_skeletons.dart';
 import '../../provider/user_provider.dart';
 import '../../data/user_model.dart';
@@ -35,7 +36,10 @@ class UsersScreen extends StatelessWidget {
                     itemBuilder: (context, index) => const ShimmerUserTile(),
                   )
                 : userProvider.users.isEmpty
-                    ? Center(child: Text(loc?.translate('no_users_found') ?? "No users found"))
+                    ? EmptyStateWidget(
+                        icon: Icons.person_search_outlined,
+                        message: loc?.translate('no_users_found') ?? "No users found",
+                      )
                     : ListView.builder(
                         itemCount: userProvider.users.length,
                         itemBuilder: (context, index) {
@@ -64,11 +68,14 @@ class _UserTile extends StatelessWidget {
       onTap: onTap,
       leading: Stack(
         children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundColor: Colors.grey[300],
-            backgroundImage: user.photoUrl != null ? NetworkImage(user.photoUrl!) : null,
-            child: user.photoUrl == null ? const Icon(Icons.person, color: Colors.white) : null,
+          Hero(
+            tag: 'avatar_${user.uid}',
+            child: CircleAvatar(
+              radius: 25,
+              backgroundColor: Colors.grey[300],
+              backgroundImage: user.photoUrl != null ? NetworkImage(user.photoUrl!) : null,
+              child: user.photoUrl == null ? const Icon(Icons.person, color: Colors.white) : null,
+            ),
           ),
           Positioned(
             right: 0,

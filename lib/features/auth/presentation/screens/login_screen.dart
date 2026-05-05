@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/utils/app_routes.dart';
@@ -112,6 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: auth.isLoading
                                 ? null
                                 : () {
+                                    HapticFeedback.lightImpact();
                                     if (_formKey.currentState!.validate()) {
                                       auth.signIn(
                                         _emailController.text.trim(),

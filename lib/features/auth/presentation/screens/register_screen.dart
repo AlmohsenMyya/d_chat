@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
@@ -149,6 +150,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           }
                           return ElevatedButton(
                             onPressed: auth.isLoading ? null : () {
+                              HapticFeedback.lightImpact();
                               if (_formKey.currentState!.validate()) {
                                 auth.signUp(
                                   _emailController.text.trim(),

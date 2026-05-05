@@ -7,6 +7,7 @@ import '../../../auth/provider/auth_provider.dart';
 import '../../provider/home_provider.dart';
 import '../widgets/chat_tile.dart';
 import '../../../../shared/widgets/shimmer_skeletons.dart';
+import '../../../../shared/widgets/empty_state_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -125,14 +126,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: _buildChatList(loc, homeProvider, authProvider.user?.uid),
-
-      // IndexedStack(
-      //   index: _currentIndex,
-      //   children: [
-      //     _buildChatList(loc, homeProvider, authProvider.user?.uid),
-      //     const SettingsScreen(),
-      //   ],
-      // ),
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton(
               onPressed: () => navService.navigateTo(AppRoutes.users),
@@ -174,7 +167,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (provider.chats.isEmpty) {
-      return Center(child: Text(loc?.translate('no_chats_yet') ?? "No conversations yet"));
+      return EmptyStateWidget(
+        icon: Icons.chat_bubble_outline,
+        message: loc?.translate('no_chats_yet') ?? "No conversations yet",
+      );
     }
 
     return ListView.builder(
