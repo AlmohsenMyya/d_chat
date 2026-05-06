@@ -43,6 +43,7 @@ class NotificationService {
       'D-chat Notifications',
       importance: Importance.max,
       priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
       showWhen: true,
     );
     const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);

@@ -27,9 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final homeProvider = context.watch<HomeProvider?>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(loc?.translate('app_name') ?? "D-chat"),
-      ),
+      appBar: AppBar(title: Text(loc?.translate('app_name') ?? "D-chat")),
       drawer: Drawer(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -85,38 +83,78 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            _buildDrawerItem(
-              context: context,
-              icon: Icons.person_outline,
-              label: loc?.translate('profile') ?? "Profile",
-              onTap: () {
-                Navigator.pop(context);
-                navService.navigateTo(AppRoutes.profile);
-              },
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  _buildDrawerItem(
+                    context: context,
+                    icon: Icons.person_outline,
+                    label: loc?.translate('profile') ?? "Profile",
+                    onTap: () {
+                      Navigator.pop(context);
+                      navService.navigateTo(AppRoutes.profile);
+                    },
+                  ),
+                  _buildDrawerItem(
+                    context: context,
+                    icon: Icons.settings_outlined,
+                    label: loc?.translate('settings') ?? "Settings",
+                    onTap: () {
+                      Navigator.pop(context);
+                      navService.navigateTo(AppRoutes.settings);
+                    },
+                  ),
+                  _buildDrawerItem(
+                    context: context,
+                    icon: Icons.lock_outline,
+                    label: loc?.translate('privacy_security') ?? "Privacy & Security",
+                    onTap: () {
+                      Navigator.pop(context);
+                      navService.navigateTo(AppRoutes.privacy);
+                    },
+                  ),
+                  _buildDrawerItem(
+                    context: context,
+                    icon: Icons.help_outline,
+                    label: loc?.translate('help_support') ?? "Help / Support",
+                    onTap: () {
+                      Navigator.pop(context);
+                      navService.navigateTo(AppRoutes.help);
+                    },
+                  ),
+                  _buildDrawerItem(
+                    context: context,
+                    icon: Icons.info_outline,
+                    label: loc?.translate('about') ?? "About",
+                    onTap: () {
+                      Navigator.pop(context);
+                      navService.navigateTo(AppRoutes.about);
+                    },
+                  ),
+                  _buildDrawerItem(
+                    context: context,
+                    icon: Icons.code_rounded,
+                    label: loc?.translate('developer') ?? "Developer",
+                    onTap: () {
+                      Navigator.pop(context);
+                      navService.navigateTo(AppRoutes.developer);
+                    },
+                  ),
+                  const Divider(indent: 20, endIndent: 20),
+                  _buildDrawerItem(
+                    context: context,
+                    icon: Icons.logout,
+                    label: loc?.translate('logout') ?? "Logout",
+                    color: Colors.redAccent,
+                    onTap: () => authProvider.signOut(),
+                  ),
+                ],
+              ),
             ),
-            _buildDrawerItem(
-              context: context,
-              icon: Icons.settings_outlined,
-              label: loc?.translate('settings') ?? "Settings",
-              onTap: () {
-                Navigator.pop(context);
-                navService.navigateTo(AppRoutes.settings);
-              },
-            ),
-            _buildDrawerItem(
-              context: context,
-              icon: Icons.logout,
-              label: loc?.translate('logout') ?? "Logout",
-              color: Colors.redAccent,
-              onTap: () => authProvider.signOut(),
-            ),
-            const Divider(indent: 20, endIndent: 20),
-
-            Image.asset('assets/logo.png', height: 200),
-            const Spacer(),
-
+            Image.asset('assets/logo.png', height: 80),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: Text(
                 "${loc?.translate('version') ?? "Version"} 1.0.0",
                 style: TextStyle(color: Colors.grey[500], fontSize: 12),
@@ -132,7 +170,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.message),
             )
           : null,
-
     );
   }
 

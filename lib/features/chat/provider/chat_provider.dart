@@ -5,6 +5,9 @@ import '../data/message_model.dart';
 import '../../../shared/services/media_service.dart';
 import '../../../core/utils/navigation_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../../settings/provider/privacy_provider.dart';
+import 'package:provider/provider.dart';
+
 class ChatProvider with ChangeNotifier {
   final ChatService _chatService;
   final NavigationService _navigationService;
@@ -56,11 +59,16 @@ class ChatProvider with ChangeNotifier {
 
   Future<void> _markAsRead() async {
     try {
-      await _chatService.markMessagesAsRead(_chatId, _currentUserId);
+      // 🕵️ تفقد إعدادات الخصوصية قبل الإرسال
+      final privacyProvider = _navigationService.navigatorKey.currentContext?.read<PrivacyProvider?>();
+      final canMark = privacyProvider?.allowReadReceipts ?? true;
 
-      // 🔥 حذف الإشعار عند القراءة
+      if (canMark) {
+        await _chatService.markMessagesAsRead(_chatId, _currentUserId);
+      }
+
+      // 🔥 حذف الإشعار عند القراءة (دائماً)
       await clearChatNotifications();
-
     } catch (e) {
       debugPrint("Error marking messages as read: $e");
     }

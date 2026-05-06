@@ -15,6 +15,11 @@ import '../../features/auth/provider/auth_provider.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/provider/profile_provider.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/settings/presentation/screens/privacy_security_screen.dart';
+import '../../features/settings/presentation/screens/help_support_screen.dart';
+import '../../features/settings/presentation/screens/about_screen.dart';
+import '../../features/settings/presentation/screens/developer_screen.dart';
+import '../../features/settings/provider/privacy_provider.dart';
 import '../../features/user/data/user_service.dart';
 import '../../features/auth/data/auth_service.dart';
 import 'navigation_service.dart';
@@ -29,6 +34,10 @@ class AppRoutes {
   static const String chat = '/chat';
   static const String settings = '/settings';
   static const String profile = '/profile';
+  static const String privacy = '/privacy';
+  static const String help = '/help';
+  static const String about = '/about';
+  static const String developer = '/developer';
 
   static Route<dynamic> generateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
@@ -57,6 +66,18 @@ class AppRoutes {
         );
       case settings:
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
+      case privacy:
+        return MaterialPageRoute(
+          builder: (context) => Consumer<PrivacyProvider>(
+            builder: (_, provider, __) => const PrivacySecurityScreen(),
+          ),
+        );
+      case help:
+        return MaterialPageRoute(builder: (_) => const HelpSupportScreen());
+      case about:
+        return MaterialPageRoute(builder: (_) => const AboutScreen());
+      case developer:
+        return MaterialPageRoute(builder: (_) => const DeveloperScreen());
       case chat:
         final targetUser = routeSettings.arguments as UserModel;
         return MaterialPageRoute(

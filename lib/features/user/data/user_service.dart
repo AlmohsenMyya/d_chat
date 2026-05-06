@@ -52,10 +52,12 @@ class UserService {
   }
 
   // 🔥 تحديث ملف المستخدم
-  Future<void> updateUserProfile(String uid, {String? name, String? photoUrl}) async {
+  Future<void> updateUserProfile(String uid, {String? name, String? photoUrl, bool? showLastSeen, bool? allowReadReceipts}) async {
     final Map<String, dynamic> updates = {};
     if (name != null) updates['name'] = name;
     if (photoUrl != null) updates['photoUrl'] = photoUrl;
+    if (showLastSeen != null) updates['showLastSeen'] = showLastSeen;
+    if (allowReadReceipts != null) updates['allowReadReceipts'] = allowReadReceipts;
 
     if (updates.isNotEmpty) {
       await _firestore.collection('users').doc(uid).update(updates);

@@ -13,6 +13,7 @@ import 'core/services/connectivity_service.dart';
 import 'shared/services/media_service.dart';
 import 'features/user/data/user_service.dart';
 import 'features/user/provider/user_provider.dart';
+import 'features/settings/provider/privacy_provider.dart';
 import 'core/theme/theme_provider.dart';
 import 'core/theme/app_themes.dart';
 import 'core/localization/language_provider.dart';
@@ -77,6 +78,13 @@ void main() async {
               context.read<NavigationService>(),
               authProvider.user!.uid,
             );
+          },
+        ),
+        ChangeNotifierProxyProvider2<UserService, AuthProvider, PrivacyProvider?>(
+          create: (context) => null,
+          update: (context, userService, authProvider, previous) {
+            if (authProvider.user == null) return null;
+            return previous ?? PrivacyProvider(userService, authProvider.user!.uid);
           },
         ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),

@@ -83,7 +83,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       Text(
                         user.isOnline
                             ? (loc?.translate('online') ?? "Online")
-                            : "${loc?.translate('last_seen') ?? "Last seen"} ${context.read<UserService>().timeAgo(user.lastSeen, loc)}",
+                            : user.showLastSeen
+                                ? "${loc?.translate('last_seen') ?? "Last seen"} ${context.read<UserService>().timeAgo(user.lastSeen, loc)}"
+                                : (loc?.translate('offline') ?? "Offline"),
                         style: TextStyle(
                           fontSize: 12,
                           color: user.isOnline ? Colors.green : Colors.grey,
